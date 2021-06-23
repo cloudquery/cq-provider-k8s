@@ -15,89 +15,81 @@ func Service() *schema.Table {
 	return &schema.Table{
 		Name:     "k8s_services",
 		Resolver: fetchServices,
-		Columns: []schema.Column{
-			{
-				Name: "name",
-				Type: schema.TypeString,
-			},
-			{
-				Name: "namespace",
-				Type: schema.TypeString,
-			},
-			{
+		Columns: append(objectCommonColumns(),
+			schema.Column{
 				Name:     "spec_selector",
 				Type:     schema.TypeJSON,
 				Resolver: schema.PathResolver("Spec.Selector"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_cluster_ip",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.ClusterIP"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_type",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Type"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_external_ips",
 				Type:     schema.TypeStringArray,
 				Resolver: schema.PathResolver("Spec.ExternalIPs"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_session_affinity",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.SessionAffinity"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_load_balancer_ip",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.LoadBalancerIP"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_load_balancer_source_ranges",
 				Type:     schema.TypeStringArray,
 				Resolver: schema.PathResolver("Spec.LoadBalancerSourceRanges"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_external_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.ExternalName"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_external_traffic_policy",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.ExternalTrafficPolicy"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_health_check_node_port",
 				Type:     schema.TypeInt,
 				Resolver: schema.PathResolver("Spec.HealthCheckNodePort"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_publish_not_ready_addresses",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.PublishNotReadyAddresses"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_session_affinity_config_client_ip_timeout_seconds",
 				Type:     schema.TypeInt,
 				Resolver: schema.PathResolver("Spec.SessionAffinityConfig.ClientIP.TimeoutSeconds"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_ip_family",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.IPFamily"),
 			},
-			{
+			schema.Column{
 				Name:     "spec_topology_keys",
 				Type:     schema.TypeStringArray,
 				Resolver: schema.PathResolver("Spec.TopologyKeys"),
 			},
-		},
+		),
 		Relations: []*schema.Table{
 			{
-				Name:     "k8s_service_ports",
+				Name:     "k8s_service_spec_ports",
 				Resolver: fetchServicePorts,
 				Columns: []schema.Column{
 					{
@@ -136,6 +128,11 @@ func Service() *schema.Table {
 				Name:     "k8s_service_status_load_balancer_ingress",
 				Resolver: fetchServiceStatus,
 				Columns: []schema.Column{
+					{
+						Name:     "service_id",
+						Type:     schema.TypeUUID,
+						Resolver: schema.ParentIdResolver,
+					},
 					{
 						Name: "IP",
 						Type: schema.TypeString,
@@ -184,5 +181,5 @@ func resolveServicePortTargetPort(ctx context.Context, meta schema.ClientMeta, r
 	} else {
 		target_port = fmt.Sprintf("%d", port.TargetPort.IntVal)
 	}
-	return resource.Set("target_port", target_port)
+	return resource.Set(c.Name, target_port)
 }
