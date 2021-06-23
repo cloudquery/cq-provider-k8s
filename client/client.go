@@ -17,7 +17,7 @@ type Client struct {
 	logger hclog.Logger
 
 	// Usually you store here your 3rd party clients and use them in the fetcher
-	ThirdPartyClient *kubernetes.Clientset
+	KClient *kubernetes.Clientset
 }
 
 func (c *Client) Logger() hclog.Logger {
@@ -48,8 +48,8 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	}
 
 	client := Client{
-		logger:           logger,
-		ThirdPartyClient: clientset,
+		logger:  logger,
+		KClient: clientset,
 	}
 
 	return &client, nil

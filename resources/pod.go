@@ -31,7 +31,7 @@ func Pod() *schema.Table {
 
 func fetchPods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	c := meta.(*client.Client)
-	pods, err := c.ThirdPartyClient.CoreV1().Pods("").List(metav1.ListOptions{})
+	pods, err := c.KClient.CoreV1().Pods("").List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
