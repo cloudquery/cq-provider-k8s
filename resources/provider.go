@@ -12,6 +12,7 @@ func Provider() *provider.Provider {
 		Configure: client.Configure,
 		ResourceMap: map[string]*schema.Table{
 			"pod": Pod(),
+			"service": Service(),
 		},
 		Config: func() provider.Config {
 			return &client.Config{}
