@@ -39,6 +39,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 
 func initServices(client *kubernetes.Clientset) Services {
 	return Services{
+		CronJobs: client.BatchV1().CronJobs(""),
 		Nodes:    client.CoreV1().Nodes(),
 		Pods:     client.CoreV1().Pods(""),
 		Services: client.CoreV1().Services(""),
