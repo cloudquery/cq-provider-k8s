@@ -19,6 +19,7 @@ func Provider() *provider.Provider {
 			"core.nodes":    CoreNodes(),
 			"core.pods":     CorePods(),
 			"core.services": CoreServices(),
+			"batch.jobs":    BatchJobs(),
 		},
 	}
 }

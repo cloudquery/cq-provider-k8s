@@ -42,5 +42,6 @@ func initServices(client *kubernetes.Clientset) Services {
 		Nodes:    client.CoreV1().Nodes(),
 		Pods:     client.CoreV1().Pods(""),
 		Services: client.CoreV1().Services(""),
+		Jobs:     client.BatchV1().Jobs(""),
 	}
 }
