@@ -242,84 +242,9 @@ func BatchJobs() *schema.Table {
 				Resolver: schema.PathResolver("Spec.Template.Spec.ShareProcessNamespace"),
 			},
 			{
-				Name:     "template_security_context_selinux_user",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SELinuxOptions.User"),
-			},
-			{
-				Name:     "template_security_context_selinux_role",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SELinuxOptions.Role"),
-			},
-			{
-				Name:     "template_security_context_selinux_type",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SELinuxOptions.Type"),
-			},
-			{
-				Name:     "template_security_context_selinux_level",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SELinuxOptions.Level"),
-			},
-			{
-				Name:     "template_security_context_windows_gmsa_credential_spec_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.WindowsOptions.GMSACredentialSpecName"),
-			},
-			{
-				Name:     "template_security_context_windows_gmsa_credential_spec",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.WindowsOptions.GMSACredentialSpec"),
-			},
-			{
-				Name:     "template_security_context_windows_run_as_user_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.WindowsOptions.RunAsUserName"),
-			},
-			{
-				Name:     "template_security_context_windows_host_process",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.WindowsOptions.HostProcess"),
-			},
-			{
-				Name:     "template_security_context_run_as_user",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.RunAsUser"),
-			},
-			{
-				Name:     "template_security_context_run_as_group",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.RunAsGroup"),
-			},
-			{
-				Name:     "template_security_context_run_as_non_root",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.RunAsNonRoot"),
-			},
-			{
-				Name:     "template_security_context_supplemental_groups",
-				Type:     schema.TypeIntArray,
-				Resolver: resolveBatchJobTemplateSpecSecurityContextSupplementalGroups,
-			},
-			{
-				Name:     "template_security_context_fs_group",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.FSGroup"),
-			},
-			{
-				Name:     "template_security_context_fs_group_change_policy",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.FSGroupChangePolicy"),
-			},
-			{
-				Name:     "template_security_context_seccomp_profile_type",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SeccompProfile.Type"),
-			},
-			{
-				Name:     "template_security_context_seccomp_profile_localhost_profile",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SecurityContext.SeccompProfile.LocalhostProfile"),
+				Name:     "template_security_context",
+				Type:     schema.TypeJSON,
+				Resolver: resolveBatchJobTemplateSpecSecurityContext,
 			},
 			{
 				Name:     "template_hostname",
@@ -1470,29 +1395,6 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_security_context_sysctls",
-				Description: "Sysctl defines a kernel parameter to be set",
-				Resolver:    fetchBatchJobTemplateSpecSecurityContextSysctls,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "name",
-						Description: "Name of a property to set",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "value",
-						Description: "Value of a property to set",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
 				Name:        "k8s_batch_job_template_image_pull_secrets",
 				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic",
 				Resolver:    fetchBatchJobTemplateSpecImagePullSecrets,
@@ -1933,21 +1835,20 @@ func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.
 	res <- result.Items
 	return nil
 }
-func resolveBatchJobTemplateSpecSecurityContextSupplementalGroups(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
 	}
-
 	if p.Spec.Template.Spec.SecurityContext == nil {
 		return nil
 	}
 
-	a := make([]int, len(p.Spec.Template.Spec.SecurityContext.SupplementalGroups))
-	for i, n := range p.Spec.Template.Spec.SecurityContext.SupplementalGroups {
-		a[i] = int(n)
+	b, err := json.Marshal(p.Spec.Template.Spec.SecurityContext)
+	if err != nil {
+		return err
 	}
-	return resource.Set(c.Name, a)
+	return resource.Set(c.Name, b)
 }
 func resolveBatchJobTemplateSpecAffinity(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
@@ -2069,7 +1970,7 @@ func fetchBatchJobTemplateSpecVolumes(ctx context.Context, meta schema.ClientMet
 func resolveBatchJobTemplateSpecVolumeAWSElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.AWSElasticBlockStore)
@@ -2081,7 +1982,7 @@ func resolveBatchJobTemplateSpecVolumeAWSElasticBlockStore(ctx context.Context, 
 func resolveBatchJobTemplateSpecVolumeNfs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.NFS)
@@ -2093,7 +1994,7 @@ func resolveBatchJobTemplateSpecVolumeNfs(ctx context.Context, meta schema.Clien
 func resolveBatchJobTemplateSpecVolumeIscsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.ISCSI)
@@ -2105,7 +2006,7 @@ func resolveBatchJobTemplateSpecVolumeIscsi(ctx context.Context, meta schema.Cli
 func resolveBatchJobTemplateSpecVolumeRbd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.RBD)
@@ -2117,7 +2018,7 @@ func resolveBatchJobTemplateSpecVolumeRbd(ctx context.Context, meta schema.Clien
 func resolveBatchJobTemplateSpecVolumeDownwardAPI(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.DownwardAPI)
@@ -2129,7 +2030,7 @@ func resolveBatchJobTemplateSpecVolumeDownwardAPI(ctx context.Context, meta sche
 func resolveBatchJobTemplateSpecVolumeStorageOs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.StorageOS)
@@ -2141,7 +2042,7 @@ func resolveBatchJobTemplateSpecVolumeStorageOs(ctx context.Context, meta schema
 func resolveBatchJobTemplateSpecVolumeCsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.CSI)
@@ -2162,7 +2063,7 @@ func fetchBatchJobTemplateSpecContainers(ctx context.Context, meta schema.Client
 func resolveBatchJobTemplateSpecContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
@@ -2174,7 +2075,7 @@ func resolveBatchJobTemplateSpecContainerEnvFrom(ctx context.Context, meta schem
 func resolveBatchJobTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.LivenessProbe)
@@ -2186,7 +2087,7 @@ func resolveBatchJobTemplateSpecContainerLivenessProbe(ctx context.Context, meta
 func resolveBatchJobTemplateSpecContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.ReadinessProbe)
@@ -2198,7 +2099,7 @@ func resolveBatchJobTemplateSpecContainerReadinessProbe(ctx context.Context, met
 func resolveBatchJobTemplateSpecContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.StartupProbe)
@@ -2210,7 +2111,7 @@ func resolveBatchJobTemplateSpecContainerStartupProbe(ctx context.Context, meta 
 func resolveBatchJobTemplateSpecContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.Lifecycle)
@@ -2222,7 +2123,7 @@ func resolveBatchJobTemplateSpecContainerLifecycle(ctx context.Context, meta sch
 func resolveBatchJobTemplateSpecContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.SecurityContext)
@@ -2234,7 +2135,7 @@ func resolveBatchJobTemplateSpecContainerSecurityContext(ctx context.Context, me
 func fetchBatchJobTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.Ports
@@ -2243,7 +2144,7 @@ func fetchBatchJobTemplateSpecContainerPorts(ctx context.Context, meta schema.Cl
 func fetchBatchJobTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.Env
@@ -2252,7 +2153,7 @@ func fetchBatchJobTemplateSpecContainerEnvs(ctx context.Context, meta schema.Cli
 func fetchBatchJobTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeMounts
@@ -2261,7 +2162,7 @@ func fetchBatchJobTemplateSpecContainerVolumeMounts(ctx context.Context, meta sc
 func fetchBatchJobTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeDevices
@@ -2279,7 +2180,7 @@ func fetchBatchJobTemplateSpecEphemeralContainers(ctx context.Context, meta sche
 func resolveBatchJobTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
@@ -2291,7 +2192,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, m
 func resolveBatchJobTemplateSpecEphemeralContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.LivenessProbe)
@@ -2303,7 +2204,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerLivenessProbe(ctx context.Cont
 func resolveBatchJobTemplateSpecEphemeralContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.ReadinessProbe)
@@ -2315,7 +2216,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerReadinessProbe(ctx context.Con
 func resolveBatchJobTemplateSpecEphemeralContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.StartupProbe)
@@ -2327,7 +2228,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerStartupProbe(ctx context.Conte
 func resolveBatchJobTemplateSpecEphemeralContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.Lifecycle)
@@ -2339,7 +2240,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerLifecycle(ctx context.Context,
 func resolveBatchJobTemplateSpecEphemeralContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.SecurityContext)
@@ -2351,7 +2252,7 @@ func resolveBatchJobTemplateSpecEphemeralContainerSecurityContext(ctx context.Co
 func fetchBatchJobTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
 	res <- p.Ports
@@ -2360,7 +2261,7 @@ func fetchBatchJobTemplateSpecEphemeralContainerPorts(ctx context.Context, meta 
 func fetchBatchJobTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
 	res <- p.Env
@@ -2369,7 +2270,7 @@ func fetchBatchJobTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta s
 func fetchBatchJobTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeMounts
@@ -2378,23 +2279,10 @@ func fetchBatchJobTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context
 func fetchBatchJobTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeDevices
-	return nil
-}
-func fetchBatchJobTemplateSpecSecurityContextSysctls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	if p.Spec.Template.Spec.SecurityContext == nil {
-		return nil
-	}
-
-	res <- p.Spec.Template.Spec.SecurityContext.Sysctls
 	return nil
 }
 func fetchBatchJobTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
@@ -2445,7 +2333,7 @@ func fetchBatchJobTemplateSpecInitContainers(ctx context.Context, meta schema.Cl
 func resolveBatchJobTemplateSpecInitContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Containerb instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
@@ -2457,7 +2345,7 @@ func resolveBatchJobTemplateSpecInitContainerEnvFrom(ctx context.Context, meta s
 func resolveBatchJobTemplateSpecInitContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.LivenessProbe)
@@ -2469,7 +2357,7 @@ func resolveBatchJobTemplateSpecInitContainerLivenessProbe(ctx context.Context, 
 func resolveBatchJobTemplateSpecInitContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.ReadinessProbe)
@@ -2481,7 +2369,7 @@ func resolveBatchJobTemplateSpecInitContainerReadinessProbe(ctx context.Context,
 func resolveBatchJobTemplateSpecInitContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.StartupProbe)
@@ -2493,7 +2381,7 @@ func resolveBatchJobTemplateSpecInitContainerStartupProbe(ctx context.Context, m
 func resolveBatchJobTemplateSpecInitContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.Lifecycle)
@@ -2505,7 +2393,7 @@ func resolveBatchJobTemplateSpecInitContainerLifecycle(ctx context.Context, meta
 func resolveBatchJobTemplateSpecInitContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.SecurityContext)
@@ -2517,7 +2405,7 @@ func resolveBatchJobTemplateSpecInitContainerSecurityContext(ctx context.Context
 func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.Ports
@@ -2526,7 +2414,7 @@ func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schem
 func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.Env
@@ -2535,7 +2423,7 @@ func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema
 func fetchBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeMounts
@@ -2544,7 +2432,7 @@ func fetchBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, met
 func fetchBatchJobTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
 	res <- p.VolumeDevices
