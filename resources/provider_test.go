@@ -25,7 +25,7 @@ func fakeSkipFields(tst *testing.T, data interface{}, skipFields []string) {
 			skipMap[parts[0]] = append(skipMap[parts[0]], strings.Join(parts[1:], "."))
 		}
 	}
-	var v = reflect.Value{}
+	var v reflect.Value
 	switch d := data.(type) {
 	case reflect.Value:
 		v = d
