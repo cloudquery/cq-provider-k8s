@@ -2,10 +2,61 @@ package resources
 
 import (
 	"github.com/cloudquery/faker/v3"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	"testing"
 )
+
+func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
+	for i, ptr := range ptrs {
+		if err := faker.FakeData(ptr); err != nil {
+			t.Fatalf("%v %v", i, ptr)
+		}
+	}
+}
+
+func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
+	var ds appsv1.DaemonSet
+	ds.Spec.Template.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
+	fakeThroughPointers(t, []interface{}{
+		&ds.TypeMeta,
+		&ds.ObjectMeta,
+		&ds.Status,
+		&ds.ManagedFields,
+		&ds.Annotations,
+		&ds.Labels,
+		&ds.OwnerReferences,
+		&ds.Status,
+		&ds.Spec.Selector,
+		&ds.Spec.RevisionHistoryLimit,
+	})
+
+	ds.Spec.Template = fakePodTemplateSpec(t)
+	return ds
+}
+
+func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
+	var templateSpec corev1.PodTemplateSpec
+	fakeThroughPointers(t, []interface{}{
+		&templateSpec.Annotations,
+		&templateSpec.Name,
+		&templateSpec.GenerateName,
+		&templateSpec.Namespace,
+		&templateSpec.SelfLink,
+		&templateSpec.UID,
+		&templateSpec.ResourceVersion,
+		&templateSpec.Generation,
+		&templateSpec.DeletionGracePeriodSeconds,
+		&templateSpec.Labels,
+		&templateSpec.Finalizers,
+		&templateSpec.ClusterName,
+		&templateSpec.OwnerReferences,
+		&templateSpec.ManagedFields,
+	})
+	templateSpec.Spec = fakePodSpec(t)
+	return templateSpec
+}
 
 func fakeNode(t *testing.T) corev1.Node {
 	// faker chokes on Node.Status.{Capacity,Allocatable} so doing it by hand
@@ -50,71 +101,6 @@ func fakeNode(t *testing.T) corev1.Node {
 		},
 	}
 	return node
-}
-
-func fakePod(t *testing.T) corev1.Pod {
-	var pod corev1.Pod
-	pod.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t, []interface{}{
-		&pod.TypeMeta,
-		&pod.ObjectMeta,
-
-		// &pod.Spec.InitContainers,
-		// &pod.Spec.Containers,
-		// &pod.Spec.EphemeralContainers,
-		&pod.Spec.RestartPolicy,
-		&pod.Spec.TerminationGracePeriodSeconds,
-		&pod.Spec.ActiveDeadlineSeconds,
-		&pod.Spec.DNSPolicy,
-		&pod.Spec.NodeSelector,
-		&pod.Spec.ServiceAccountName,
-		&pod.Spec.AutomountServiceAccountToken,
-		&pod.Spec.NodeName,
-		&pod.Spec.HostNetwork,
-		&pod.Spec.HostPID,
-		&pod.Spec.HostIPC,
-		&pod.Spec.ShareProcessNamespace,
-		&pod.Spec.SecurityContext,
-		&pod.Spec.ImagePullSecrets,
-		&pod.Spec.Hostname,
-		&pod.Spec.Subdomain,
-		&pod.Spec.Affinity,
-		&pod.Spec.SchedulerName,
-		&pod.Spec.Tolerations,
-		&pod.Spec.HostAliases,
-		&pod.Spec.PriorityClassName,
-		&pod.Spec.Priority,
-		&pod.Spec.DNSConfig,
-		&pod.Spec.ReadinessGates,
-		&pod.Spec.RuntimeClassName,
-		&pod.Spec.EnableServiceLinks,
-		&pod.Spec.PreemptionPolicy,
-		// &pod.Spec.Overhead,
-		&pod.Spec.TopologySpreadConstraints,
-		&pod.Spec.SetHostnameAsFQDN,
-
-		&pod.Status,
-	})
-	rl := make(corev1.ResourceList)
-	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
-	pod.Spec.Overhead = rl
-
-	pod.Spec.InitContainers = []corev1.Container{fakeContainer(t)}
-	pod.Spec.Containers = []corev1.Container{fakeContainer(t)}
-	pod.Spec.EphemeralContainers = []corev1.EphemeralContainer{fakeEphemeralContainer(t)}
-
-	pod.Status.HostIP = "192.168.1.2"
-	pod.Status.PodIP = "192.168.1.1"
-	pod.Status.PodIPs = []corev1.PodIP{{IP: "192.168.1.1"}}
-	return pod
-}
-
-func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
-	for i, ptr := range ptrs {
-		if err := faker.FakeData(ptr); err != nil {
-			t.Fatalf("%v %v", i, ptr)
-		}
-	}
 }
 
 func fakeVolume(t *testing.T) corev1.Volume {
@@ -223,4 +209,69 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 	c.StartupProbe = &corev1.Probe{}
 	c.Lifecycle = &corev1.Lifecycle{}
 	return c
+}
+
+func fakePod(t *testing.T) corev1.Pod {
+	var pod corev1.Pod
+	pod.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
+	fakeThroughPointers(t, []interface{}{
+		&pod.TypeMeta,
+		&pod.ObjectMeta,
+		&pod.Status,
+	})
+	pod.Spec = fakePodSpec(t)
+
+	pod.Status.HostIP = "192.168.1.2"
+	pod.Status.PodIP = "192.168.1.1"
+	pod.Status.PodIPs = []corev1.PodIP{{IP: "192.168.1.1"}}
+	return pod
+}
+
+func fakePodSpec(t *testing.T) corev1.PodSpec {
+	var podSpec corev1.PodSpec
+	podSpec.Volumes = []corev1.Volume{fakeVolume(t)}
+	fakeThroughPointers(t, []interface{}{
+		&podSpec.RestartPolicy,
+		&podSpec.TerminationGracePeriodSeconds,
+		&podSpec.ActiveDeadlineSeconds,
+		&podSpec.DNSPolicy,
+		&podSpec.NodeSelector,
+		&podSpec.ServiceAccountName,
+		&podSpec.AutomountServiceAccountToken,
+		&podSpec.NodeName,
+		&podSpec.HostNetwork,
+		&podSpec.HostPID,
+		&podSpec.HostIPC,
+		&podSpec.ShareProcessNamespace,
+		&podSpec.SecurityContext,
+		&podSpec.ImagePullSecrets,
+		&podSpec.Hostname,
+		&podSpec.Subdomain,
+		&podSpec.Affinity,
+		&podSpec.SchedulerName,
+		&podSpec.Tolerations,
+		&podSpec.HostAliases,
+		&podSpec.PriorityClassName,
+		&podSpec.Priority,
+		&podSpec.DNSConfig,
+		&podSpec.DNSPolicy,
+		&podSpec.ReadinessGates,
+		&podSpec.RuntimeClassName,
+		&podSpec.EnableServiceLinks,
+		&podSpec.PreemptionPolicy,
+		&podSpec.TopologySpreadConstraints,
+		&podSpec.SetHostnameAsFQDN,
+		&podSpec.RestartPolicy,
+		&podSpec.TerminationGracePeriodSeconds,
+		&podSpec.ActiveDeadlineSeconds,
+	})
+	rl := make(corev1.ResourceList)
+	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
+	podSpec.Overhead = rl
+
+	podSpec.InitContainers = []corev1.Container{fakeContainer(t)}
+	podSpec.Containers = []corev1.Container{fakeContainer(t)}
+	podSpec.EphemeralContainers = []corev1.EphemeralContainer{fakeEphemeralContainer(t)}
+
+	return podSpec
 }
