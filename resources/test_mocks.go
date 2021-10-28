@@ -37,25 +37,11 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	return ds
 }
 
-//nolint
 func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 	var templateSpec corev1.PodTemplateSpec
-	fakeThroughPointers(t, []interface{}{
-		&templateSpec.Annotations,
-		&templateSpec.Name,
-		&templateSpec.GenerateName,
-		&templateSpec.Namespace,
-		&templateSpec.SelfLink,
-		&templateSpec.UID,
-		&templateSpec.ResourceVersion,
-		&templateSpec.Generation,
-		&templateSpec.DeletionGracePeriodSeconds,
-		&templateSpec.Labels,
-		&templateSpec.Finalizers,
-		&templateSpec.ClusterName,
-		&templateSpec.OwnerReferences,
-		&templateSpec.ManagedFields,
-	})
+	if err := faker.FakeDataSkipFields(&templateSpec, []string{"Spec"}); err != nil {
+		t.Fatal(err)
+	}
 	templateSpec.Spec = fakePodSpec(t)
 	return templateSpec
 }
@@ -231,49 +217,25 @@ func fakePod(t *testing.T) corev1.Pod {
 
 func fakePodSpec(t *testing.T) corev1.PodSpec {
 	var podSpec corev1.PodSpec
-	podSpec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t, []interface{}{
-		&podSpec.RestartPolicy,
-		&podSpec.TerminationGracePeriodSeconds,
-		&podSpec.ActiveDeadlineSeconds,
-		&podSpec.DNSPolicy,
-		&podSpec.NodeSelector,
-		&podSpec.ServiceAccountName,
-		&podSpec.AutomountServiceAccountToken,
-		&podSpec.NodeName,
-		&podSpec.HostNetwork,
-		&podSpec.HostPID,
-		&podSpec.HostIPC,
-		&podSpec.ShareProcessNamespace,
-		&podSpec.SecurityContext,
-		&podSpec.ImagePullSecrets,
-		&podSpec.Hostname,
-		&podSpec.Subdomain,
-		&podSpec.Affinity,
-		&podSpec.SchedulerName,
-		&podSpec.Tolerations,
-		&podSpec.HostAliases,
-		&podSpec.PriorityClassName,
-		&podSpec.Priority,
-		&podSpec.DNSConfig,
-		&podSpec.DNSPolicy,
-		&podSpec.ReadinessGates,
-		&podSpec.RuntimeClassName,
-		&podSpec.EnableServiceLinks,
-		&podSpec.PreemptionPolicy,
-		&podSpec.TopologySpreadConstraints,
-		&podSpec.SetHostnameAsFQDN,
-		&podSpec.RestartPolicy,
-		&podSpec.TerminationGracePeriodSeconds,
-		&podSpec.ActiveDeadlineSeconds,
-	})
+	if err := faker.FakeDataSkipFields(&podSpec, []string{
+		"RestartPolicy",
+		"Overhead",
+		"InitContainers",
+		"Containers",
+		"EphemeralContainers",
+		"Volumes",
+		"DNSPolicy",
+	}); err != nil {
+		t.Fatal(err)
+	}
 	rl := make(corev1.ResourceList)
 	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
 	podSpec.Overhead = rl
-
 	podSpec.InitContainers = []corev1.Container{fakeContainer(t)}
 	podSpec.Containers = []corev1.Container{fakeContainer(t)}
 	podSpec.EphemeralContainers = []corev1.EphemeralContainer{fakeEphemeralContainer(t)}
+	podSpec.Volumes = []corev1.Volume{fakeVolume(t)}
+	podSpec.RestartPolicy = "test"
 
 	return podSpec
 }

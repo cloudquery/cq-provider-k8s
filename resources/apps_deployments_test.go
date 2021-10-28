@@ -1,12 +1,14 @@
 package resources
 
 import (
+	"testing"
+
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-k8s/client/mocks"
+	"github.com/cloudquery/faker/v3"
 	"github.com/golang/mock/gomock"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func createAppsDeployments(t *testing.T, ctrl *gomock.Controller) client.Services {
@@ -21,21 +23,13 @@ func createAppsDeployments(t *testing.T, ctrl *gomock.Controller) client.Service
 
 func fakeAppsDeployment(t *testing.T) appsv1.Deployment {
 	var deployment appsv1.Deployment
-	fakeThroughPointers(t, []interface{}{
-		&deployment.TypeMeta,
-		&deployment.ObjectMeta,
-		&deployment.Status,
-		&deployment.ManagedFields,
-		&deployment.Annotations,
-		&deployment.Labels,
-		&deployment.OwnerReferences,
-		&deployment.Status,
-		&deployment.Spec.Selector,
-		&deployment.Spec.RevisionHistoryLimit,
-	})
-
+	if err := faker.FakeDataSkipFields(&deployment, []string{"Spec"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := faker.FakeDataSkipFields(&deployment.Spec, []string{"Template"}); err != nil {
+		t.Fatal(err)
+	}
 	deployment.Spec.Template = fakePodTemplateSpec(t)
-
 	return deployment
 }
 

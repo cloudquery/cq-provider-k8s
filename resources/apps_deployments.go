@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	appsv1 "k8s.io/api/apps/v1"
@@ -20,6 +21,7 @@ func AppsDeployments() *schema.Table {
 		DeleteFilter: client.DeleteContextFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
+			client.CommonContextField,
 			{
 				Name:     "name",
 				Type:     schema.TypeString,
@@ -152,142 +154,142 @@ func AppsDeployments() *schema.Table {
 				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.ClusterName"),
 			},
 			{
-				Name:     "template_spec_restart_policy",
+				Name:     "template_restart_policy",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.RestartPolicy"),
 			},
 			{
-				Name:     "template_spec_termination_grace_period_seconds",
+				Name:     "template_termination_grace_period_seconds",
 				Type:     schema.TypeBigInt,
 				Resolver: schema.PathResolver("Spec.Template.Spec.TerminationGracePeriodSeconds"),
 			},
 			{
-				Name:     "template_spec_active_deadline_seconds",
+				Name:     "template_active_deadline_seconds",
 				Type:     schema.TypeBigInt,
 				Resolver: schema.PathResolver("Spec.Template.Spec.ActiveDeadlineSeconds"),
 			},
 			{
-				Name:     "template_spec_dns_policy",
+				Name:     "template_dns_policy",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.DNSPolicy"),
 			},
 			{
-				Name:     "template_spec_node_selector",
+				Name:     "template_node_selector",
 				Type:     schema.TypeJSON,
 				Resolver: schema.PathResolver("Spec.Template.Spec.NodeSelector"),
 			},
 			{
-				Name:     "template_spec_service_account_name",
+				Name:     "template_service_account_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.ServiceAccountName"),
 			},
 			{
-				Name:     "template_spec_deprecated_service_account",
+				Name:     "template_deprecated_service_account",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.DeprecatedServiceAccount"),
 			},
 			{
-				Name:     "template_spec_automount_service_account_token",
+				Name:     "template_automount_service_account_token",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.AutomountServiceAccountToken"),
 			},
 			{
-				Name:     "template_spec_node_name",
+				Name:     "template_node_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.NodeName"),
 			},
 			{
-				Name:     "template_spec_host_network",
+				Name:     "template_host_network",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.HostNetwork"),
 			},
 			{
-				Name:     "template_spec_host_pid",
+				Name:     "template_host_pid",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.HostPID"),
 			},
 			{
-				Name:     "template_spec_host_ipc",
+				Name:     "template_host_ipc",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.HostIPC"),
 			},
 			{
-				Name:     "template_spec_share_process_namespace",
+				Name:     "template_share_process_namespace",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.ShareProcessNamespace"),
 			},
 			{
-				Name:     "template_spec_security_context",
+				Name:     "template_security_context",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecSecurityContext,
 			},
 			{
-				Name:     "template_spec_hostname",
+				Name:     "template_hostname",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.Hostname"),
 			},
 			{
-				Name:     "template_spec_subdomain",
+				Name:     "template_subdomain",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.Subdomain"),
 			},
 			{
-				Name:     "template_spec_affinity",
+				Name:     "template_affinity",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecAffinity,
 			},
 			{
-				Name:     "template_spec_scheduler_name",
+				Name:     "template_scheduler_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.SchedulerName"),
 			},
 			{
-				Name:     "template_spec_priority_class_name",
+				Name:     "template_priority_class_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.PriorityClassName"),
 			},
 			{
-				Name:     "template_spec_priority",
+				Name:     "template_priority",
 				Type:     schema.TypeInt,
 				Resolver: schema.PathResolver("Spec.Template.Spec.Priority"),
 			},
 			{
-				Name:     "template_spec_dns_config",
+				Name:     "template_dns_config",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecDNSConfig,
 			},
 			{
-				Name:     "template_spec_readiness_gates",
+				Name:     "template_readiness_gates",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecReadinessGates,
 			},
 			{
-				Name:     "template_spec_runtime_class_name",
+				Name:     "template_runtime_class_name",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.RuntimeClassName"),
 			},
 			{
-				Name:     "template_spec_enable_service_links",
+				Name:     "template_enable_service_links",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.EnableServiceLinks"),
 			},
 			{
-				Name:     "template_spec_preemption_policy",
+				Name:     "template_preemption_policy",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Spec.Template.Spec.PreemptionPolicy"),
 			},
 			{
-				Name:     "template_spec_overhead",
+				Name:     "template_overhead",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecOverhead,
 			},
 			{
-				Name:     "template_spec_topology_spread_constraints",
+				Name:     "template_topology_spread_constraints",
 				Type:     schema.TypeJSON,
 				Resolver: resolveAppsDeploymentTemplateSpecTopologySpreadConstraints,
 			},
 			{
-				Name:     "template_spec_set_hostname_as_fqdn",
+				Name:     "template_set_hostname_as_fqdn",
 				Type:     schema.TypeBool,
 				Resolver: schema.PathResolver("Spec.Template.Spec.SetHostnameAsFQDN"),
 			},
@@ -592,7 +594,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_volumes",
+				Name:        "k8s_apps_deployment_template_volumes",
 				Description: "Volume represents a named volume in a pod that may be accessed by any container in the pod.",
 				Resolver:    fetchAppsDeploymentTemplateSpecVolumes,
 				Columns: []schema.Column{
@@ -779,7 +781,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_containers",
+				Name:        "k8s_apps_deployment_template_containers",
 				Description: "A single application container that you want to run within a pod.",
 				Resolver:    fetchAppsDeploymentTemplateSpecContainers,
 				Columns: []schema.Column{
@@ -896,13 +898,13 @@ func AppsDeployments() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_apps_deployment_template_spec_container_ports",
+						Name:        "k8s_apps_deployment_template_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
+								Name:        "deployment_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -935,13 +937,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_container_envs",
+						Name:        "k8s_apps_deployment_template_container_envs",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
+								Name:        "deployment_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -957,7 +959,7 @@ func AppsDeployments() *schema.Table {
 							},
 							{
 								Name:        "value_from_field_ref_api_version",
-								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"appsv1appsv1\". +optional",
+								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"v1\". +optional",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
 							},
@@ -1023,13 +1025,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_container_volume_mounts",
+						Name:        "k8s_apps_deployment_template_container_volume_mounts",
 						Description: "VolumeMount describes a mounting of a Volume within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeMounts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
+								Name:        "deployment_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1066,13 +1068,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_container_volume_devices",
+						Name:        "k8s_apps_deployment_template_container_volume_devices",
 						Description: "volumeDevice describes a mapping of a raw block device within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeDevices,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
+								Name:        "deployment_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1091,319 +1093,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_containers",
-				Description: "A single application container that you want to run within a pod.",
-				Resolver:    fetchAppsDeploymentTemplateSpecContainers,
-				Columns: []schema.Column{
-					{
-						Name:        "deployment_cq_id",
-						Description: "Unique CloudQuery ID of k8s_apps_deployments table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "image",
-						Description: "Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets. +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "command",
-						Description: "Entrypoint array",
-						Type:        schema.TypeStringArray,
-					},
-					{
-						Name:        "args",
-						Description: "Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment",
-						Type:        schema.TypeStringArray,
-					},
-					{
-						Name:        "working_dir",
-						Description: "Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "env_from",
-						Description: "List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerEnvFrom,
-					},
-					{
-						Name:        "resources_limits",
-						Description: "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Resources.Limits"),
-					},
-					{
-						Name:        "resources_requests",
-						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Resources.Requests"),
-					},
-					{
-						Name:        "liveness_probe",
-						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerLivenessProbe,
-					},
-					{
-						Name:        "readiness_probe",
-						Description: "Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerReadinessProbe,
-					},
-					{
-						Name:        "startup_probe",
-						Description: "StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerStartupProbe,
-					},
-					{
-						Name:        "lifecycle",
-						Description: "Actions that the management system should take in response to container lifecycle events. Cannot be updated. +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerLifecycle,
-					},
-					{
-						Name:        "termination_message_path",
-						Description: "Optional: Path at which the file to which the container's termination message will be written is mounted into the container's filesystem. Message written is intended to be brief final status, such as an assertion failure message. Will be truncated by the node if greater than 4096 bytes",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "termination_message_policy",
-						Description: "Indicate how the termination message should be populated",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "image_pull_policy",
-						Description: "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "security_context",
-						Description: "SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveAppsDeploymentTemplateSpecContainerSecurityContext,
-					},
-					{
-						Name:        "stdin",
-						Description: "Whether this container should allocate a buffer for stdin in the container runtime",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "stdin_once",
-						Description: "Whether the container runtime should close the stdin channel after it has been opened by a single attach",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "tty",
-						Description: "Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. +optional",
-						Type:        schema.TypeBool,
-						Resolver:    schema.PathResolver("TTY"),
-					},
-				},
-				Relations: []*schema.Table{
-					{
-						Name:        "k8s_apps_deployment_template_spec_container_ports",
-						Description: "ContainerPort represents a network port in a single container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerPorts,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "If specified, this must be an IANA_SVC_NAME and unique within the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "host_port",
-								Description: "Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this. +optional",
-								Type:        schema.TypeInt,
-							},
-							{
-								Name:        "container_port",
-								Description: "Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.",
-								Type:        schema.TypeInt,
-							},
-							{
-								Name:        "protocol",
-								Description: "Protocol for port",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "host_ip",
-								Description: "What host IP to bind the external port to. +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("HostIP"),
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_spec_container_envs",
-						Description: "EnvVar represents an environment variable present in a Container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerEnvs,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "Name of the environment variable",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value_from_field_ref_api_version",
-								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"appsv1appsv1\". +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
-							},
-							{
-								Name:        "value_from_field_ref_field_path",
-								Description: "Path of the field to select in the specified API version.",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.FieldRef.FieldPath"),
-							},
-							{
-								Name:        "value_from_resource_field_ref_container_name",
-								Description: "Container name: required for volumes, optional for env vars +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.ContainerName"),
-							},
-							{
-								Name:        "value_from_resource_field_ref_resource",
-								Description: "Required: resource to select",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.Resource"),
-							},
-							{
-								Name:     "value_from_resource_field_ref_divisor_format",
-								Type:     schema.TypeString,
-								Resolver: schema.PathResolver("ValueFrom.ResourceFieldRef.Divisor.Format"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_local_object_reference_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_key",
-								Description: "The key to select.",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Key"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_optional",
-								Description: "Specify whether the ConfigMap or its key must be defined +optional",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Optional"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_local_object_reference_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_key",
-								Description: "The key of the secret to select from",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Key"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_optional",
-								Description: "Specify whether the Secret or its key must be defined +optional",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_spec_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_spec_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-				},
-			},
-			{
-				Name:        "k8s_apps_deployment_template_spec_ephemeral_containers",
+				Name:        "k8s_apps_deployment_template_ephemeral_containers",
 				Description: "An EphemeralContainer is a container that may be added temporarily to an existing pod for user-initiated activities such as debugging",
 				Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainers,
 				Columns: []schema.Column{
@@ -1535,13 +1225,13 @@ func AppsDeployments() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_apps_deployment_template_spec_ephemeral_container_ports",
+						Name:        "k8s_apps_deployment_template_ephemeral_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_ephemeral_containers table (FK)",
+								Name:        "deployment_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1574,13 +1264,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_ephemeral_container_envs",
+						Name:        "k8s_apps_deployment_template_ephemeral_container_envs",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_ephemeral_containers table (FK)",
+								Name:        "deployment_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1596,7 +1286,7 @@ func AppsDeployments() *schema.Table {
 							},
 							{
 								Name:        "value_from_field_ref_api_version",
-								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"appsv1appsv1\". +optional",
+								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"v1\". +optional",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
 							},
@@ -1662,13 +1352,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_ephemeral_container_volume_mounts",
+						Name:        "k8s_apps_deployment_template_ephemeral_container_volume_mounts",
 						Description: "VolumeMount describes a mounting of a Volume within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_ephemeral_containers table (FK)",
+								Name:        "deployment_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1705,13 +1395,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_ephemeral_container_volume_devices",
+						Name:        "k8s_apps_deployment_template_ephemeral_container_volume_devices",
 						Description: "volumeDevice describes a mapping of a raw block device within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_ephemeral_containers table (FK)",
+								Name:        "deployment_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1730,7 +1420,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_image_pull_secrets",
+				Name:        "k8s_apps_deployment_template_image_pull_secrets",
 				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic",
 				Resolver:    fetchAppsDeploymentTemplateSpecImagePullSecrets,
 				Columns: []schema.Column{
@@ -1748,7 +1438,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_tolerations",
+				Name:        "k8s_apps_deployment_template_tolerations",
 				Description: "The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.",
 				Resolver:    fetchAppsDeploymentTemplateSpecTolerations,
 				Columns: []schema.Column{
@@ -1786,7 +1476,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_host_aliases",
+				Name:        "k8s_apps_deployment_template_host_aliases",
 				Description: "HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file.",
 				Resolver:    fetchAppsDeploymentTemplateSpecHostAliases,
 				Columns: []schema.Column{
@@ -1843,7 +1533,7 @@ func AppsDeployments() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_deployment_template_spec_init_containers",
+				Name:        "k8s_apps_deployment_template_init_containers",
 				Description: "A single application container that you want to run within a pod.",
 				Resolver:    fetchAppsDeploymentTemplateSpecInitContainers,
 				Columns: []schema.Column{
@@ -1960,13 +1650,13 @@ func AppsDeployments() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_apps_deployment_template_spec_init_container_ports",
+						Name:        "k8s_apps_deployment_template_init_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_init_containers table (FK)",
+								Name:        "deployment_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1999,13 +1689,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_init_container_envs",
+						Name:        "k8s_apps_deployment_template_init_container_envs",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_init_containers table (FK)",
+								Name:        "deployment_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -2021,7 +1711,7 @@ func AppsDeployments() *schema.Table {
 							},
 							{
 								Name:        "value_from_field_ref_api_version",
-								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"appsv1appsv1\". +optional",
+								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"v1\". +optional",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
 							},
@@ -2087,13 +1777,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_init_container_volume_mounts",
+						Name:        "k8s_apps_deployment_template_init_container_volume_mounts",
 						Description: "VolumeMount describes a mounting of a Volume within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerVolumeMounts,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_init_containers table (FK)",
+								Name:        "deployment_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -2130,13 +1820,13 @@ func AppsDeployments() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_apps_deployment_template_spec_init_container_volume_devices",
+						Name:        "k8s_apps_deployment_template_init_container_volume_devices",
 						Description: "volumeDevice describes a mapping of a raw block device within a container.",
 						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerVolumeDevices,
 						Columns: []schema.Column{
 							{
-								Name:        "deployment_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_spec_init_containers table (FK)",
+								Name:        "deployment_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -2247,51 +1937,54 @@ func resolveAppsDeploymentTemplateSpecTopologySpreadConstraints(ctx context.Cont
 	return resource.Set(c.Name, b)
 }
 func fetchAppsDeploymentOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.OwnerReferences
+	res <- deployment.OwnerReferences
 	return nil
 }
 func fetchAppsDeploymentManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.ManagedFields
+	res <- deployment.ManagedFields
 	return nil
 }
 func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.Spec.Selector.MatchExpressions
+	if deployment.Spec.Selector == nil {
+		return nil
+	}
+	res <- deployment.Spec.Selector.MatchExpressions
 	return nil
 }
 func fetchAppsDeploymentTemplateOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.Spec.Template.OwnerReferences
+	res <- deployment.Spec.Template.OwnerReferences
 	return nil
 }
 func fetchAppsDeploymentTemplateManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.Spec.Template.ManagedFields
+	res <- deployment.Spec.Template.ManagedFields
 	return nil
 }
 func fetchAppsDeploymentTemplateSpecVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	node, ok := parent.Item.(appsv1.Deployment)
+	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
 	}
-	res <- node.Spec.Template.Spec.Volumes
+	res <- deployment.Spec.Template.Spec.Volumes
 	return nil
 }
 func resolveAppsDeploymentTemplateSpecVolumeAWSElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
@@ -2323,128 +2016,482 @@ func resolveAppsDeploymentTemplateSpecVolumeNfs(ctx context.Context, meta schema
 	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecVolumeIscsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+	if p.ISCSI == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ISCSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecVolumeRbd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+	if p.RBD == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.RBD)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecVolumeDownwardAPI(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+	if p.DownwardAPI == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.DownwardAPI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecVolumeStorageOs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+	if p.StorageOS == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StorageOS)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecVolumeCsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+	if p.CSI == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.CSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsDeploymentTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.Containers
+	return nil
 }
 func resolveAppsDeploymentTemplateSpecContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsDeploymentTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Env
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.VolumeMounts
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.VolumeDevices
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.EphemeralContainers
+	return nil
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecEphemeralContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsDeploymentTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Env
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.VolumeMounts
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.VolumeDevices
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.ImagePullSecrets
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecTolerations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.Tolerations
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecHostAliases(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.HostAliases
+	return nil
 }
 func fetchAppsDeploymentStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+
+	res <- p.Status.Conditions
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.InitContainers
+	return nil
 }
 func resolveAppsDeploymentTemplateSpecInitContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecInitContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecInitContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecInitContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecInitContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsDeploymentTemplateSpecInitContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsDeploymentTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Ports
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Env
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.VolumeMounts
+	return nil
 }
 func fetchAppsDeploymentTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.VolumeDevices
+	return nil
 }
