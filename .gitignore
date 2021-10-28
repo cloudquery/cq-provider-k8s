@@ -10,7 +10,7 @@ dist/
 vendor/
 bin/
 .release-env
-cq-provider-aws
+cq-provider-*
 *.exe
 *.log
 .cq_reattach
@@ -20,8 +20,3 @@ cq-provider-aws
 # .tfstate files
 *.tfstate
 *.tfstate.*
-.swp
-
-__debug_bin
-#test directories
-**/.test/*
