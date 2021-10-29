@@ -13,6 +13,8 @@ An EphemeralContainer is a container that may be added temporarily to an existin
 |env_from|jsonb|List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER|
 |resources_limits|jsonb|Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional|
 |resources_requests|jsonb|Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional|
+|volume_mounts|jsonb|Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge|
+|volume_devices|jsonb|volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional|
 |liveness_probe|jsonb|Probes are not allowed for ephemeral containers. +optional|
 |readiness_probe|jsonb|Probes are not allowed for ephemeral containers. +optional|
 |startup_probe|jsonb|Probes are not allowed for ephemeral containers. +optional|

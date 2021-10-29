@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	batchv1 "k8s.io/api/batch/v1"
@@ -810,6 +811,18 @@ func BatchJobs() *schema.Table {
 						Resolver:    schema.PathResolver("Resources.Requests"),
 					},
 					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainerVolumeDevices,
+					},
+					{
 						Name:        "liveness_probe",
 						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
@@ -999,72 +1012,6 @@ func BatchJobs() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_batch_job_template_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchBatchJobTemplateSpecContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_batch_job_template_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchBatchJobTemplateSpecContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1125,6 +1072,18 @@ func BatchJobs() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("EphemeralContainerCommon.Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1326,72 +1285,6 @@ func BatchJobs() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_batch_job_template_ephemeral_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_batch_job_template_ephemeral_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1560,6 +1453,18 @@ func BatchJobs() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecInitContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecInitContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1748,72 +1653,6 @@ func BatchJobs() *schema.Table {
 								Description: "Specify whether the Secret or its key must be defined +optional",
 								Type:        schema.TypeBool,
 								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
-							},
-						},
-					},
-					{
-						Name:        "k8s_batch_job_template_init_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchBatchJobTemplateSpecInitContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_batch_job_template_init_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchBatchJobTemplateSpecInitContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
 							},
 						},
 					},
@@ -2072,6 +1911,30 @@ func resolveBatchJobTemplateSpecContainerEnvFrom(ctx context.Context, meta schem
 	}
 	return resource.Set(c.Name, b)
 }
+func resolveBatchJobTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
 func resolveBatchJobTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
@@ -2150,24 +2013,6 @@ func fetchBatchJobTemplateSpecContainerEnvs(ctx context.Context, meta schema.Cli
 	res <- p.Env
 	return nil
 }
-func fetchBatchJobTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchBatchJobTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeDevices
-	return nil
-}
 func fetchBatchJobTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(batchv1.Job)
 	if !ok {
@@ -2184,6 +2029,30 @@ func resolveBatchJobTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, m
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
 	if err != nil {
 		return err
 	}
@@ -2267,24 +2136,6 @@ func fetchBatchJobTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta s
 	res <- p.Env
 	return nil
 }
-func fetchBatchJobTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchBatchJobTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeDevices
-	return nil
-}
 func fetchBatchJobTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(batchv1.Job)
 	if !ok {
@@ -2337,6 +2188,30 @@ func resolveBatchJobTemplateSpecInitContainerEnvFrom(ctx context.Context, meta s
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
 	if err != nil {
 		return err
 	}
@@ -2418,23 +2293,5 @@ func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema
 	}
 
 	res <- p.Env
-	return nil
-}
-func fetchBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchBatchJobTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeDevices
 	return nil
 }
