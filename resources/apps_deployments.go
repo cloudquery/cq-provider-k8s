@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	appsv1 "k8s.io/api/apps/v1"
@@ -835,6 +834,18 @@ func AppsDeployments() *schema.Table {
 						Resolver:    schema.PathResolver("Resources.Requests"),
 					},
 					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecContainerVolumeDevices,
+					},
+					{
 						Name:        "liveness_probe",
 						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
@@ -1024,72 +1035,6 @@ func AppsDeployments() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_apps_deployment_template_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1150,6 +1095,18 @@ func AppsDeployments() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("EphemeralContainerCommon.Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1351,72 +1308,6 @@ func AppsDeployments() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_apps_deployment_template_ephemeral_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_ephemeral_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1585,6 +1476,18 @@ func AppsDeployments() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecInitContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsDeploymentTemplateSpecInitContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1773,72 +1676,6 @@ func AppsDeployments() *schema.Table {
 								Description: "Specify whether the Secret or its key must be defined +optional",
 								Type:        schema.TypeBool,
 								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_init_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_deployment_template_init_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsDeploymentTemplateSpecInitContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "deployment_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_deployment_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
 							},
 						},
 					},
@@ -2104,6 +1941,30 @@ func resolveAppsDeploymentTemplateSpecContainerEnvFrom(ctx context.Context, meta
 	}
 	return resource.Set(c.Name, b)
 }
+func resolveAppsDeploymentTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsDeploymentTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
 func resolveAppsDeploymentTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
@@ -2190,22 +2051,6 @@ func fetchAppsDeploymentTemplateSpecContainerEnvs(ctx context.Context, meta sche
 	res <- p.Env
 	return nil
 }
-func fetchAppsDeploymentTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchAppsDeploymentTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-	res <- p.VolumeDevices
-	return nil
-}
 func fetchAppsDeploymentTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
@@ -2221,6 +2066,30 @@ func resolveAppsDeploymentTemplateSpecEphemeralContainerEnvFrom(ctx context.Cont
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
 	if err != nil {
 		return err
 	}
@@ -2312,22 +2181,6 @@ func fetchAppsDeploymentTemplateSpecEphemeralContainerEnvs(ctx context.Context, 
 	res <- p.Env
 	return nil
 }
-func fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchAppsDeploymentTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-	res <- p.VolumeDevices
-	return nil
-}
 func fetchAppsDeploymentTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
@@ -2379,6 +2232,30 @@ func resolveAppsDeploymentTemplateSpecInitContainerEnvFrom(ctx context.Context, 
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsDeploymentTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsDeploymentTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
 	if err != nil {
 		return err
 	}
@@ -2475,23 +2352,5 @@ func fetchAppsDeploymentTemplateSpecInitContainerEnvs(ctx context.Context, meta 
 	}
 
 	res <- p.Env
-	return nil
-}
-func fetchAppsDeploymentTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeMounts
-	return nil
-}
-func fetchAppsDeploymentTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.VolumeDevices
 	return nil
 }
