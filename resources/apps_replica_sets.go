@@ -2,8 +2,13 @@ package resources
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func AppsReplicaSets() *schema.Table {
@@ -763,6 +768,18 @@ func AppsReplicaSets() *schema.Table {
 						Resolver:    schema.PathResolver("Resources.Requests"),
 					},
 					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecContainerVolumeDevices,
+					},
+					{
 						Name:        "liveness_probe",
 						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
@@ -952,72 +969,6 @@ func AppsReplicaSets() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_apps_replica_set_template_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_replica_set_template_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1078,6 +1029,18 @@ func AppsReplicaSets() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("EphemeralContainerCommon.Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecEphemeralContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecEphemeralContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1279,72 +1242,6 @@ func AppsReplicaSets() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_apps_replica_set_template_ephemeral_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecEphemeralContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_replica_set_template_ephemeral_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecEphemeralContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_ephemeral_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 			{
@@ -1513,6 +1410,18 @@ func AppsReplicaSets() *schema.Table {
 						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
 						Type:        schema.TypeJSON,
 						Resolver:    schema.PathResolver("Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecInitContainerVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveAppsReplicaSetTemplateSpecInitContainerVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
@@ -1704,72 +1613,6 @@ func AppsReplicaSets() *schema.Table {
 							},
 						},
 					},
-					{
-						Name:        "k8s_apps_replica_set_template_init_container_volume_mounts",
-						Description: "VolumeMount describes a mounting of a Volume within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecInitContainerVolumeMounts,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "This must match the Name of a Volume.",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "read_only",
-								Description: "Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. +optional",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "mount_path",
-								Description: "Path within the container at which the volume should be mounted",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path",
-								Description: "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root). +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "mount_propagation",
-								Description: "mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. +optional",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "sub_path_expr",
-								Description: "Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \"\" (volume's root). SubPathExpr and SubPath are mutually exclusive. +optional",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "k8s_apps_replica_set_template_init_container_volume_devices",
-						Description: "volumeDevice describes a mapping of a raw block device within a container.",
-						Resolver:    fetchAppsReplicaSetTemplateSpecInitContainerVolumeDevices,
-						Columns: []schema.Column{
-							{
-								Name:        "replica_set_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_apps_replica_set_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "name must match the name of a persistentVolumeClaim in the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "device_path",
-								Description: "devicePath is the path inside of the container that the device will be mapped to.",
-								Type:        schema.TypeString,
-							},
-						},
-					},
 				},
 			},
 		},
@@ -1780,173 +1623,675 @@ func AppsReplicaSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchAppsReplicaSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	replicaSets := meta.(*client.Client).Services.ReplicaSets
+	result, err := replicaSets.List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	res <- result.Items
+	return nil
 }
 func resolveAppsReplicaSetTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	if p.Spec.Template.Spec.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecAffinity(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	if p.Spec.Template.Spec.Affinity == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.Affinity)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecDNSConfig(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	if p.Spec.Template.Spec.DNSConfig == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.DNSConfig)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecReadinessGates(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.ReadinessGates)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecOverhead(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.Overhead)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecTopologySpreadConstraints(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.Spec.Template.Spec.TopologySpreadConstraints)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsReplicaSetOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.OwnerReferences
+	return nil
 }
 func fetchAppsReplicaSetManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.ManagedFields
+	return nil
 }
 func fetchAppsReplicaSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	if p.Spec.Selector == nil {
+		return nil
+	}
+	res <- p.Spec.Selector.MatchExpressions
+	return nil
 }
 func fetchAppsReplicaSetTemplateOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.OwnerReferences
+	return nil
 }
 func fetchAppsReplicaSetTemplateManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.ManagedFields
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.Volumes
+	return nil
 }
 func resolveAppsReplicaSetTemplateSpecVolumeAWSElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.AWSElasticBlockStore == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.AWSElasticBlockStore)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeNfs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.NFS == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.NFS)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeIscsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.ISCSI == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.ISCSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeRbd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.RBD == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.RBD)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeDownwardAPI(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.DownwardAPI == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.DownwardAPI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeStorageOs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.StorageOS == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.StorageOS)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecVolumeCsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	if p.CSI == nil {
+		return nil
+	}
+
+	b, err := json.Marshal(p.CSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsReplicaSetTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.Containers
+	return nil
 }
 func resolveAppsReplicaSetTemplateSpecContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsReplicaSetTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Env
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.EphemeralContainers
+	return nil
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecEphemeralContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsReplicaSetTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+	res <- p.Env
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.ImagePullSecrets
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecTolerations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.Tolerations
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecHostAliases(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.HostAliases
+	return nil
 }
 func fetchAppsReplicaSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+
+	res <- p.Status.Conditions
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(appsv1.ReplicaSet)
+	if !ok {
+		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
+	}
+	res <- p.Spec.Template.Spec.InitContainers
+	return nil
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveAppsReplicaSetTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.LivenessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.ReadinessProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.StartupProbe == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.Lifecycle == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func resolveAppsReplicaSetTemplateSpecInitContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	panic("not implemented")
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	if p.SecurityContext == nil {
+		return nil
+	}
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchAppsReplicaSetTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Ports
+	return nil
 }
 func fetchAppsReplicaSetTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchAppsReplicaSetTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Env
+	return nil
 }
