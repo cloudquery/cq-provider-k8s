@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -15,6 +16,7 @@ func RbacRoleBindings() *schema.Table {
 		Description: "RoleBinding references a role, but does not contain it",
 		Resolver:    fetchRbacRoleBindings,
 		Columns: []schema.Column{
+			client.CommonContextField,
 			{
 				Name:     "type_meta_kind",
 				Type:     schema.TypeString,
