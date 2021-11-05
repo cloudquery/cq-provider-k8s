@@ -1689,13 +1689,19 @@ func AppsDeployments() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchAppsDeployments(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	deployments := meta.(*client.Client).Services.Deployments
-	result, err := deployments.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.Deployments
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
-	return nil
 }
 func resolveAppsDeploymentTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(appsv1.Deployment)
