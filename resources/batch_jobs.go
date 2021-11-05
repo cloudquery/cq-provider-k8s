@@ -1666,13 +1666,19 @@ func BatchJobs() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	jobs := meta.(*client.Client).Services.Jobs
-	result, err := jobs.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.Jobs
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
-	return nil
 }
 func resolveBatchJobTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
