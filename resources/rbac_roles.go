@@ -223,12 +223,19 @@ func RbacRoles() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchRbacRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	rolesClient := meta.(*client.Client).Services.Roles
-	result, err := rolesClient.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.Roles
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
 	return nil
 }
 func fetchRbacRoleOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {

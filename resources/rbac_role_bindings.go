@@ -233,12 +233,19 @@ func RbacRoleBindings() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchRbacRoleBindings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	services := meta.(*client.Client).Services.RoleBindings
-	result, err := services.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.RoleBindings
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
 	return nil
 }
 func fetchRbacRoleBindingOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
