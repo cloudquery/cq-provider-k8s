@@ -1623,13 +1623,19 @@ func AppsReplicaSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchAppsReplicaSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	replicaSets := meta.(*client.Client).Services.ReplicaSets
-	result, err := replicaSets.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.ReplicaSets
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
-	return nil
 }
 func resolveAppsReplicaSetTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(appsv1.ReplicaSet)
