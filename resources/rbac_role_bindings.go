@@ -246,7 +246,6 @@ func fetchRbacRoleBindings(ctx context.Context, meta schema.ClientMeta, parent *
 		}
 		opts.Continue = result.GetContinue()
 	}
-	return nil
 }
 func fetchRbacRoleBindingOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	role, ok := parent.Item.(rbacv1.RoleBinding)

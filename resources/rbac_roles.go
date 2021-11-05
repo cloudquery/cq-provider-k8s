@@ -236,7 +236,6 @@ func fetchRbacRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.
 		}
 		opts.Continue = result.GetContinue()
 	}
-	return nil
 }
 func fetchRbacRoleOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	role, ok := parent.Item.(rbacv1.Role)
