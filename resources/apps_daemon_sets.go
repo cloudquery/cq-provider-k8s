@@ -1697,7 +1697,6 @@ func fetchAppsDaemonSets(ctx context.Context, meta schema.ClientMeta, parent *sc
 		}
 		opts.Continue = result.GetContinue()
 	}
-	return nil
 }
 func resolveAppsDaemonSetTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(appsv1.DaemonSet)
