@@ -1977,13 +1977,19 @@ func AppsStatefulSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchAppsStatefulSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	nodes := meta.(*client.Client).Services.StatefulSets
-	result, err := nodes.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	client := meta.(*client.Client).Services.StatefulSets
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
 	}
-	res <- result.Items
-	return nil
 }
 func resolveAppsStatefulSetTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(appsv1.StatefulSet)
