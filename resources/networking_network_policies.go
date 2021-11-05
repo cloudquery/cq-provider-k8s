@@ -2,7 +2,12 @@ package resources
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func NetworkingNetworkPolicies() *schema.Table {
@@ -11,6 +16,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 		Description: "NetworkPolicy describes what network traffic is allowed for a set of Pods",
 		Resolver:    fetchNetworkingNetworkPolicies,
 		Columns: []schema.Column{
+			client.CommonContextField,
 			{
 				Name:     "kind",
 				Type:     schema.TypeString,
@@ -506,82 +512,133 @@ func NetworkingNetworkPolicies() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchNetworkingNetworkPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	client := meta.(*client.Client).Services.NetworkPolicies
+	opts := metav1.ListOptions{}
+	for {
+		result, err := client.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		if result.GetContinue() == "" {
+			return nil
+		}
+		opts.Continue = result.GetContinue()
+	}
 }
 func fetchNetworkingNetworkPolicyOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+	}
+	res <- p.OwnerReferences
+	return nil
 }
 func fetchNetworkingNetworkPolicyManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+	}
+	res <- p.ManagedFields
+	return nil
 }
 func fetchNetworkingNetworkPolicyPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+	}
+	res <- p.Spec.PodSelector.MatchExpressions
+	return nil
 }
 func fetchNetworkingNetworkPolicyIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+	}
+	res <- p.Spec.Ingress
+	return nil
 }
 func fetchNetworkingNetworkPolicyIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyIngressRule)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchNetworkingNetworkPolicyIngressFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyIngressRule)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
+	}
+	res <- p.From
+	return nil
 }
 func fetchNetworkingNetworkPolicyIngressFromPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+	}
+	if p.PodSelector == nil {
+		return nil
+	}
+	res <- p.PodSelector.MatchExpressions
+	return nil
 }
 func fetchNetworkingNetworkPolicyIngressFromNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+	}
+	if p.NamespaceSelector == nil {
+		return nil
+	}
+	res <- p.NamespaceSelector.MatchExpressions
+	return nil
 }
 func fetchNetworkingNetworkPolicyEgresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+	}
+	res <- p.Spec.Egress
+	return nil
 }
 func fetchNetworkingNetworkPolicyEgressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyEgressRule)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
+	}
+	res <- p.Ports
+	return nil
 }
 func fetchNetworkingNetworkPolicyEgressTos(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyEgressRule)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
+	}
+	res <- p.To
+	return nil
 }
 func fetchNetworkingNetworkPolicyEgressToPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+	}
+	if p.PodSelector == nil {
+		return nil
+	}
+	res <- p.PodSelector.MatchExpressions
+	return nil
 }
 func fetchNetworkingNetworkPolicyEgressToNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-
-// ====================================================================================================================
-//                                                  User Defined Helpers
-// ====================================================================================================================
-
-func fetchNetworkingNetworkPolicySpecPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecIngressFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecIngressFromPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecIngressFromNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecEgresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecEgressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecEgressTos(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecEgressToPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
-}
-func fetchNetworkingNetworkPolicySpecEgressToNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	panic("not implemented")
+	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+	if !ok {
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+	}
+	if p.NamespaceSelector == nil {
+		return nil
+	}
+	res <- p.NamespaceSelector.MatchExpressions
+	return nil
 }
