@@ -14,6 +14,7 @@ func RbacRoleBindings() *schema.Table {
 		Name:        "k8s_rbac_role_bindings",
 		Description: "RoleBinding references a role, but does not contain it",
 		Resolver:    fetchRbacRoleBindings,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
