@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -19,14 +18,13 @@ func RbacRoles() *schema.Table {
 		DeleteFilter: client.DeleteContextFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
-			client.CommonContextField,
 			{
-				Name:     "type_meta_kind",
+				Name:     "kind",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
-				Name:     "type_meta_api_version",
+				Name:     "api_version",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -209,7 +207,7 @@ func RbacRoles() *schema.Table {
 						Type:        schema.TypeStringArray,
 					},
 					{
-						Name:        "non_resource_url_s",
+						Name:        "non_resource_urls",
 						Description: "NonResourceURLs is a set of partial urls that a user should have access to",
 						Type:        schema.TypeStringArray,
 						Resolver:    schema.PathResolver("NonResourceURLs"),
