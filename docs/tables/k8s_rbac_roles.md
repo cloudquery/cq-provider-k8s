@@ -4,9 +4,8 @@ Role is a namespaced, logical grouping of PolicyRules that can be referenced as 
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
-|k8s_config_context|text|Name of the context from k8s configuration.|
-|type_meta_kind|text||
-|type_meta_api_version|text||
+|kind|text||
+|api_version|text||
 |name|text||
 |generate_name|text||
 |namespace|text||

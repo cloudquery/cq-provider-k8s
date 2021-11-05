@@ -18,6 +18,7 @@ func RbacRoles() *schema.Table {
 		DeleteFilter: client.DeleteContextFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
+			client.CommonContextField,
 			{
 				Name:     "kind",
 				Type:     schema.TypeString,
