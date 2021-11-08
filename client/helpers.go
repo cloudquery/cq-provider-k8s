@@ -3,8 +3,9 @@ package client
 import (
 	"context"
 	"errors"
-
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/thoas/go-funk"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
@@ -103,4 +104,29 @@ func DeleteContextFilter(meta schema.ClientMeta, _ *schema.Resource) []interface
 func ResolveContext(_ context.Context, meta schema.ClientMeta, r *schema.Resource, c schema.Column) error {
 	client := meta.(*Client)
 	return r.Set(c.Name, client.currentContext)
+}
+
+func OwnerReferenceResolver(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	v := funk.Get(parent.Item, "ObjectMeta")
+	if v == nil {
+		return nil
+	}
+	objMeta := v.(v1.ObjectMeta)
+	if len(objMeta.OwnerReferences) == 0 {
+		return nil
+	}
+	refs := make([]OwnerReferences, len(objMeta.OwnerReferences))
+	for i, o := range  objMeta.OwnerReferences {
+		refs[i] = OwnerReferences{
+			ResourceId:     parent.Get("uid").(string),
+			OwnerReference: o,
+		}
+	}
+	res <- refs
+	return nil
+}
+
+type OwnerReferences struct {
+	ResourceId string
+	v1.OwnerReference
 }
