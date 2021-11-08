@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"errors"
+
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"github.com/thoas/go-funk"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -116,7 +117,7 @@ func OwnerReferenceResolver(ctx context.Context, meta schema.ClientMeta, parent 
 		return nil
 	}
 	refs := make([]OwnerReferences, len(objMeta.OwnerReferences))
-	for i, o := range  objMeta.OwnerReferences {
+	for i, o := range objMeta.OwnerReferences {
 		refs[i] = OwnerReferences{
 			ResourceId:     parent.Get("uid").(string),
 			OwnerReference: o,

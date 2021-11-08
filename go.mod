@@ -3,10 +3,11 @@ module github.com/cloudquery/cq-provider-k8s
 go 1.17
 
 require (
-	github.com/cloudquery/cq-provider-sdk v0.4.9
+	github.com/cloudquery/cq-provider-sdk v0.5.1
 	github.com/cloudquery/faker/v3 v3.7.4
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-hclog v1.0.0
+	github.com/thoas/go-funk v0.9.1
 	k8s.io/api v0.22.1
 	k8s.io/apimachinery v0.22.1
 	k8s.io/client-go v0.22.1
@@ -72,7 +73,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	github.com/thoas/go-funk v0.9.1 // indirect
 	github.com/tmccombs/hcl2json v0.3.3 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.4 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect

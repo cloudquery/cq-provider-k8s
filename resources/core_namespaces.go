@@ -3,20 +3,21 @@ package resources
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func CoreNamespaces() *schema.Table {
 	return &schema.Table{
-		Name:        "k8s_core_namespaces",
-		Description: "Namespace provides a scope for Names. Use of multiple namespaces is optional.",
-		Multiplex:   client.ContextMultiplex,
+		Name:         "k8s_core_namespaces",
+		Description:  "Namespace provides a scope for Names. Use of multiple namespaces is optional.",
+		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
-		Resolver:    fetchCoreNamespaces,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
+		Resolver:     fetchCoreNamespaces,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
@@ -148,9 +149,9 @@ func CoreNamespaces() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name: "resource_uid",
+						Name:        "resource_uid",
 						Description: "resources this owner object references",
-						Type: schema.TypeString,
+						Type:        schema.TypeString,
 					},
 					{
 						Name:        "api_version",

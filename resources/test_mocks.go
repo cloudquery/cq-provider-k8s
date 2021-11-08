@@ -1,11 +1,12 @@
 package resources
 
 import (
+	"testing"
+
 	"github.com/cloudquery/faker/v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
-	"testing"
 )
 
 func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
