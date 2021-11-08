@@ -152,6 +152,7 @@ func CoreNamespaces() *schema.Table {
 						Name:        "resource_uid",
 						Description: "resources this owner object references",
 						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ResourceUID"),
 					},
 					{
 						Name:        "api_version",
@@ -196,7 +197,7 @@ func CoreNamespaces() *schema.Table {
 // ====================================================================================================================
 
 func fetchCoreNamespaces(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	namespaces := meta.(*client.Client).Services.Namespaces
+	namespaces := meta.(*client.Client).Services().Namespaces
 	opts := metav1.ListOptions{}
 	for {
 		result, err := namespaces.List(ctx, opts)
