@@ -17,5 +17,7 @@ Role is a namespaced, logical grouping of PolicyRules that can be referenced as 
 |deletion_grace_period_seconds|bigint||
 |labels|jsonb||
 |annotations|jsonb||
+|owner_references|jsonb||
 |finalizers|text[]||
 |cluster_name|text||
+|managed_fields|jsonb||
