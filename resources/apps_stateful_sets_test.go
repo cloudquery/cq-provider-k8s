@@ -35,6 +35,7 @@ func fakeStatefulSet(t *testing.T) appsv1.StatefulSet {
 	rs.Spec.VolumeClaimTemplates = []v1.PersistentVolumeClaim{*fakePersistentVolumeClaim(t)}
 	rs.Spec.Selector = fakeSelector(t)
 	rs.Spec.Template = fakePodTemplateSpec(t)
+	rs.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
 	return rs
 }
 
