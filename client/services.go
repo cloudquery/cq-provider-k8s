@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+
 	rbacv1 "k8s.io/api/rbac/v1"
 
 	corev1 "k8s.io/api/core/v1"
@@ -10,12 +11,12 @@ import (
 )
 
 type Services struct {
-	Client     *kubernetes.Clientset
-	Nodes      NodesClient
-	Pods       PodsClient
-	Services   ServicesClient
-	Namespaces NamespacesClient
-  RoleBindings RoleBindingsClient
+	Client       *kubernetes.Clientset
+	Nodes        NodesClient
+	Pods         PodsClient
+	Services     ServicesClient
+	Namespaces   NamespacesClient
+	RoleBindings RoleBindingsClient
 }
 
 //go:generate mockgen -package=mocks -destination=./mocks/namespaces.go . NamespacesClient

@@ -123,8 +123,8 @@ func buildKubeClient(kubeConfig api.Config, ctx string) (*kubernetes.Clientset, 
 
 func initServices(client *kubernetes.Clientset) Services {
 	return Services{
-		Client:     client,
-		Namespaces: client.CoreV1().Namespaces(),
+		Client:       client,
+		Namespaces:   client.CoreV1().Namespaces(),
 		Nodes:        client.CoreV1().Nodes(),
 		Pods:         client.CoreV1().Pods(""),
 		Services:     client.CoreV1().Services(""),
