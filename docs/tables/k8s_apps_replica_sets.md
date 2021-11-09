@@ -15,8 +15,10 @@ ReplicaSet ensures that a specified number of pod replicas are running at any gi
 |deletion_grace_period_seconds|bigint||
 |labels|jsonb||
 |annotations|jsonb||
+|owner_references|jsonb||
 |finalizers|text[]||
 |cluster_name|text||
+|managed_fields|jsonb||
 |replicas|integer|Replicas is the number of desired replicas. This is a pointer to distinguish between explicit zero and unspecified. Defaults to 1. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller +optional|
 |min_ready_seconds|integer|Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) +optional|
 |selector_match_labels|jsonb||
