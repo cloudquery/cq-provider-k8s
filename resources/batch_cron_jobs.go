@@ -1678,12 +1678,19 @@ func BatchCronJobs() *schema.Table {
 // ====================================================================================================================
 func fetchBatchCronJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	jobs := meta.(*client.Client).Services.CronJobs
-	result, err := jobs.List(ctx, metav1.ListOptions{})
-	if err != nil {
-		return err
+	opts := metav1.ListOptions{}
+	for {
+		result, err := jobs.List(ctx, opts)
+		if err != nil {
+			return err
+		}
+		res <- result.Items
+		next := result.GetContinue()
+		if next == "" {
+			return nil
+		}
+		opts.Continue = next
 	}
-	res <- result.Items
-	return nil
 }
 
 func resolveBatchCronJobOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
