@@ -15,8 +15,10 @@ Deployment enables declarative updates for Pods and ReplicaSets.
 |deletion_grace_period_seconds|bigint||
 |labels|jsonb||
 |annotations|jsonb||
+|owner_references|jsonb||
 |finalizers|text[]||
 |cluster_name|text||
+|managed_fields|jsonb||
 |replicas|integer|Number of desired pods|
 |selector_match_labels|jsonb||
 |template_name|text||
