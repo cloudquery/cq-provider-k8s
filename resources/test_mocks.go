@@ -1,12 +1,13 @@
 package resources
 
 import (
+	"testing"
+
 	"github.com/cloudquery/faker/v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
@@ -38,6 +39,7 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	return ds
 }
 
+//nolint
 func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 	var templateSpec corev1.PodTemplateSpec
 	fakeThroughPointers(t, []interface{}{
@@ -102,6 +104,17 @@ func fakeResourceList(t *testing.T) *corev1.ResourceList {
 	rl := make(corev1.ResourceList)
 	rl[corev1.ResourceName(faker.UUIDHyphenated())] = *apiresource.NewQuantity(faker.UnixTime(), apiresource.BinarySI)
 	return &rl
+}
+
+func fakeManagedFields(t *testing.T) *metav1.ManagedFieldsEntry {
+	m := metav1.ManagedFieldsEntry{}
+	if err := faker.FakeData(&m); err != nil {
+		t.Fatal(err)
+	}
+	m.FieldsV1 = &metav1.FieldsV1{
+		Raw: []byte("{\"test\":1}"),
+	}
+	return &m
 }
 
 func fakeVolume(t *testing.T) corev1.Volume {

@@ -20,6 +20,8 @@ func Provider() *provider.Provider {
 			"core.pods":          CorePods(),
 			"core.services":      CoreServices(),
 			"apps.stateful_sets": AppsStatefulSets(),
+			"rbac.roles":         RbacRoles(),
+			"rbac.role_bindings": RbacRoleBindings(),
 		},
 	}
 }
