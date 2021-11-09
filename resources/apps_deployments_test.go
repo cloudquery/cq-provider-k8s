@@ -30,6 +30,7 @@ func fakeAppsDeployment(t *testing.T) appsv1.Deployment {
 		t.Fatal(err)
 	}
 	deployment.Spec.Template = fakePodTemplateSpec(t)
+	deployment.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
 	return deployment
 }
 
