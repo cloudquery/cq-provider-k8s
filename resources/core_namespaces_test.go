@@ -17,6 +17,7 @@ func createCoreNamespace(t *testing.T, ctrl *gomock.Controller) client.Services 
 	if err := faker.FakeData(&namespace); err != nil {
 		t.Fatal(err)
 	}
+	namespace.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	s.EXPECT().List(gomock.Any(), metav1.ListOptions{}).Return(
 		&corev1.NamespaceList{Items: []corev1.Namespace{namespace}}, nil,
 	)
