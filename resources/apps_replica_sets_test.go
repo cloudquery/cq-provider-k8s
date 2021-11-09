@@ -29,6 +29,7 @@ func fakeReplicaSet(t *testing.T) appsv1.ReplicaSet {
 		t.Fatal(err)
 	}
 	rs.Spec.Template = fakePodTemplateSpec(t)
+	rs.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
 	return rs
 }
 
