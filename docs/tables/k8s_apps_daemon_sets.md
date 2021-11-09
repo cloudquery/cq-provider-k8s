@@ -15,8 +15,10 @@ DaemonSet represents the configuration of a daemon set.
 |deletion_grace_period_seconds|bigint||
 |labels|jsonb||
 |annotations|jsonb||
+|owner_references|jsonb||
 |finalizers|text[]||
 |cluster_name|text||
+|managed_fields|jsonb||
 |selector_match_labels|jsonb||
 |template_name|text||
 |template_generate_name|text||
