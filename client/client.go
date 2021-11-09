@@ -124,9 +124,11 @@ func buildKubeClient(kubeConfig api.Config, ctx string) (*kubernetes.Clientset, 
 func initServices(client *kubernetes.Clientset) Services {
 	return Services{
 		Client:     client,
-		Nodes:      client.CoreV1().Nodes(),
-		Pods:       client.CoreV1().Pods(""),
-		Services:   client.CoreV1().Services(""),
 		Namespaces: client.CoreV1().Namespaces(),
+		Nodes:        client.CoreV1().Nodes(),
+		Pods:         client.CoreV1().Pods(""),
+		Services:     client.CoreV1().Services(""),
+		Roles:        client.RbacV1().Roles(""),
+		RoleBindings: client.RbacV1().RoleBindings(""),
 	}
 }
