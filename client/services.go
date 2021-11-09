@@ -16,6 +16,7 @@ type Services struct {
 	Pods         PodsClient
 	Services     ServicesClient
 	Namespaces   NamespacesClient
+	Roles        RolesClient
 	RoleBindings RoleBindingsClient
 }
 

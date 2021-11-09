@@ -119,17 +119,6 @@ func fakeNode(t *testing.T) corev1.Node {
 	return node
 }
 
-func fakeManagedFields(t *testing.T) *v1.ManagedFieldsEntry {
-	m := v1.ManagedFieldsEntry{}
-	if err := faker.FakeData(&m); err != nil {
-		t.Fatal(err)
-	}
-	m.FieldsV1 = &v1.FieldsV1{
-		Raw: []byte("{\"test\":1}"),
-	}
-	return &m
-}
-
 func fakeVolume(t *testing.T) corev1.Volume {
 	// faker chokes on volume.VolumeSource.Ephemeral
 	var volume corev1.Volume

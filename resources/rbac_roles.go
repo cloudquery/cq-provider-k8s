@@ -151,7 +151,7 @@ func RbacRoles() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchRbacRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	client := meta.(*client.Client).Services.Roles
+	client := meta.(*client.Client).Services().Roles
 	opts := metav1.ListOptions{}
 	for {
 		result, err := client.List(ctx, opts)
