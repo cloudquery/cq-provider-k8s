@@ -82,6 +82,12 @@ func BatchJobs() *schema.Table {
 				Resolver:    schema.PathResolver("ObjectMeta.Annotations"),
 			},
 			{
+				Name:        "owner_references",
+				Description: "List of objects depended by this object",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobsOwnerReferences,
+			},
+			{
 				Name:        "finalizers",
 				Description: "Must be empty before the object is deleted from the registry",
 				Type:        schema.TypeStringArray,
@@ -92,6 +98,12 @@ func BatchJobs() *schema.Table {
 				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
+			},
+			{
+				Name:        "managed_fields",
+				Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobsManagedFields,
 			},
 			{
 				Name:        "parallelism",
@@ -190,6 +202,12 @@ func BatchJobs() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Annotations"),
 			},
 			{
+				Name:        "template_owner_references",
+				Description: "List of objects depended by this object",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobsTemplateOwnerReferences,
+			},
+			{
 				Name:        "template_finalizers",
 				Description: "Must be empty before the object is deleted from the registry",
 				Type:        schema.TypeStringArray,
@@ -200,6 +218,12 @@ func BatchJobs() *schema.Table {
 				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.ClusterName"),
+			},
+			{
+				Name:        "template_managed_fields",
+				Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobsTemplateManagedFields,
 			},
 			{
 				Name:        "template_spec_restart_policy",
@@ -283,7 +307,7 @@ func BatchJobs() *schema.Table {
 				Name:        "template_spec_security_context",
 				Description: "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecSecurityContext,
+				Resolver:    resolveBatchJobsTemplateSpecSecurityContext,
 			},
 			{
 				Name:        "template_spec_hostname",
@@ -301,7 +325,7 @@ func BatchJobs() *schema.Table {
 				Name:        "template_spec_affinity",
 				Description: "If specified, the pod's scheduling constraints +optional",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecAffinity,
+				Resolver:    resolveBatchJobsTemplateSpecAffinity,
 			},
 			{
 				Name:        "template_spec_scheduler_name",
@@ -325,13 +349,13 @@ func BatchJobs() *schema.Table {
 				Name:        "template_spec_dns_config",
 				Description: "Specifies the DNS parameters of a pod. Parameters specified here will be merged to the generated DNS configuration based on DNSPolicy. +optional",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecDnsConfig,
+				Resolver:    resolveBatchJobsTemplateSpecDnsConfig,
 			},
 			{
 				Name:        "template_spec_readiness_gates",
 				Description: "If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to \"True\" More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates +optional",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecReadinessGates,
+				Resolver:    resolveBatchJobsTemplateSpecReadinessGates,
 			},
 			{
 				Name:        "template_spec_runtime_class_name",
@@ -355,13 +379,13 @@ func BatchJobs() *schema.Table {
 				Name:        "template_spec_overhead",
 				Description: "Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecOverhead,
+				Resolver:    resolveBatchJobsTemplateSpecOverhead,
 			},
 			{
 				Name:        "template_spec_topology_spread_constraints",
 				Description: "TopologySpreadConstraints describes how a group of pods ought to spread across topology domains",
 				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobTemplateSpecTopologySpreadConstraints,
+				Resolver:    resolveBatchJobsTemplateSpecTopologySpreadConstraints,
 			},
 			{
 				Name:        "template_spec_set_hostname_as_fqdn",
@@ -426,90 +450,6 @@ func BatchJobs() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "k8s_batch_job_owner_references",
-				Description: "OwnerReference contains enough information to let you identify an owning object",
-				Resolver:    fetchBatchJobOwnerReferences,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "api_version",
-						Description: "API version of the referent.",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "kind",
-						Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "uid",
-						Description: "UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("UID"),
-					},
-					{
-						Name:        "controller",
-						Description: "If true, this reference points to the managing controller. +optional",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "block_owner_deletion",
-						Description: "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs \"delete\" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned. +optional",
-						Type:        schema.TypeBool,
-					},
-				},
-			},
-			{
-				Name:        "k8s_batch_job_managed_fields",
-				Description: "ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.",
-				Resolver:    fetchBatchJobManagedFields,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "manager",
-						Description: "Manager is an identifier of the workflow managing these fields.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "operation",
-						Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "api_version",
-						Description: "APIVersion defines the version of this resource that this field set applies to",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "fields_type",
-						Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "subresource",
-						Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
 				Name:        "k8s_batch_job_selector_match_expressions",
 				Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
 				Resolver:    fetchBatchJobSelectorMatchExpressions,
@@ -534,90 +474,6 @@ func BatchJobs() *schema.Table {
 						Name:        "values",
 						Description: "values is an array of string values",
 						Type:        schema.TypeStringArray,
-					},
-				},
-			},
-			{
-				Name:        "k8s_batch_job_template_owner_references",
-				Description: "OwnerReference contains enough information to let you identify an owning object",
-				Resolver:    fetchBatchJobTemplateOwnerReferences,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "api_version",
-						Description: "API version of the referent.",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "kind",
-						Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "uid",
-						Description: "UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("UID"),
-					},
-					{
-						Name:        "controller",
-						Description: "If true, this reference points to the managing controller. +optional",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "block_owner_deletion",
-						Description: "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs \"delete\" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned. +optional",
-						Type:        schema.TypeBool,
-					},
-				},
-			},
-			{
-				Name:        "k8s_batch_job_template_managed_fields",
-				Description: "ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.",
-				Resolver:    fetchBatchJobTemplateManagedFields,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "manager",
-						Description: "Manager is an identifier of the workflow managing these fields.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "operation",
-						Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "api_version",
-						Description: "APIVersion defines the version of this resource that this field set applies to",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "fields_type",
-						Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "subresource",
-						Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource",
-						Type:        schema.TypeString,
 					},
 				},
 			},
@@ -1733,7 +1589,55 @@ func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.
 		opts.Continue = result.GetContinue()
 	}
 }
-func resolveBatchJobTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.OwnerReferences)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobsManagedFields(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.ManagedFields)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobsTemplateOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.Spec.Template.OwnerReferences)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobsTemplateManagedFields(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.Spec.Template.ManagedFields)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobsTemplateSpecSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1748,7 +1652,7 @@ func resolveBatchJobTemplateSpecSecurityContext(ctx context.Context, meta schema
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecAffinity(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsTemplateSpecAffinity(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1760,7 +1664,7 @@ func resolveBatchJobTemplateSpecAffinity(ctx context.Context, meta schema.Client
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecDnsConfig(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsTemplateSpecDnsConfig(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1772,7 +1676,7 @@ func resolveBatchJobTemplateSpecDnsConfig(ctx context.Context, meta schema.Clien
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecReadinessGates(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsTemplateSpecReadinessGates(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1784,7 +1688,7 @@ func resolveBatchJobTemplateSpecReadinessGates(ctx context.Context, meta schema.
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecOverhead(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsTemplateSpecOverhead(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1796,7 +1700,7 @@ func resolveBatchJobTemplateSpecOverhead(ctx context.Context, meta schema.Client
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecTopologySpreadConstraints(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobsTemplateSpecTopologySpreadConstraints(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1807,24 +1711,6 @@ func resolveBatchJobTemplateSpecTopologySpreadConstraints(ctx context.Context, m
 		return err
 	}
 	return resource.Set(c.Name, b)
-}
-func fetchBatchJobOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.OwnerReferences
-	return nil
-}
-func fetchBatchJobManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.ManagedFields
-	return nil
 }
 func fetchBatchJobSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	job, ok := parent.Item.(batchv1.Job)
@@ -1838,24 +1724,6 @@ func fetchBatchJobSelectorMatchExpressions(ctx context.Context, meta schema.Clie
 	res <- job.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchBatchJobTemplateOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.Spec.Template.OwnerReferences
-	return nil
-}
-func fetchBatchJobTemplateManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.Spec.Template.ManagedFields
-	return nil
-}
 func fetchBatchJobTemplateSpecVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	job, ok := parent.Item.(batchv1.Job)
 	if !ok {
@@ -1865,128 +1733,6 @@ func fetchBatchJobTemplateSpecVolumes(ctx context.Context, meta schema.ClientMet
 	res <- job.Spec.Template.Spec.Volumes
 	return nil
 }
-func fetchBatchJobTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.Spec.Template.Spec.InitContainers
-	return nil
-}
-func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.Ports
-	return nil
-}
-func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.Env
-	return nil
-}
-func fetchBatchJobTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.Spec.Template.Spec.Containers
-	return nil
-}
-func fetchBatchJobTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.Ports
-	return nil
-}
-func fetchBatchJobTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
-	}
-
-	res <- p.Env
-	return nil
-}
-func fetchBatchJobTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- p.Spec.Template.Spec.EphemeralContainers
-	return nil
-}
-func fetchBatchJobTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
-	}
-
-	res <- p.Ports
-	return nil
-}
-func fetchBatchJobTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
-	}
-
-	res <- p.Env
-	return nil
-}
-func fetchBatchJobTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- p.Spec.Template.Spec.ImagePullSecrets
-	return nil
-}
-func fetchBatchJobTemplateSpecTolerations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- p.Spec.Template.Spec.Tolerations
-	return nil
-}
-func fetchBatchJobTemplateSpecHostAliases(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- p.Spec.Template.Spec.HostAliases
-	return nil
-}
-func fetchBatchJobStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
-	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
-	}
-
-	res <- job.Status.Conditions
-	return nil
-}
-
-// ====================================================================================================================
-//                                                  User Defined Helpers
-// ====================================================================================================================
-
 func resolveBatchJobTemplateSpecVolumesAwsElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
@@ -2070,6 +1816,138 @@ func resolveBatchJobTemplateSpecVolumesCsi(ctx context.Context, meta schema.Clie
 		return err
 	}
 	return resource.Set(c.Name, b)
+}
+func fetchBatchJobTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	job, ok := parent.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+	}
+
+	res <- job.Spec.Template.Spec.InitContainers
+	return nil
+}
+func resolveBatchJobTemplateSpecInitContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Containerb instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Ports
+	return nil
+}
+func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Env
+	return nil
+}
+func fetchBatchJobTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	job, ok := parent.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+	}
+
+	res <- job.Spec.Template.Spec.Containers
+	return nil
 }
 func resolveBatchJobTemplateSpecContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
@@ -2167,6 +2045,33 @@ func resolveBatchJobTemplateSpecContainersSecurityContext(ctx context.Context, m
 	}
 	return resource.Set(c.Name, b)
 }
+func fetchBatchJobTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Ports
+	return nil
+}
+func fetchBatchJobTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+	}
+
+	res <- p.Env
+	return nil
+}
+func fetchBatchJobTemplateSpecEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(batchv1.Job)
+	if !ok {
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+	}
+
+	res <- p.Spec.Template.Spec.EphemeralContainers
+	return nil
+}
 func resolveBatchJobTemplateSpecEphemeralContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
@@ -2263,100 +2168,57 @@ func resolveBatchJobTemplateSpecEphemeralContainersSecurityContext(ctx context.C
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a corev1.Containerb instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.EnvFrom)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Ports
+	return nil
 }
-func resolveBatchJobTemplateSpecInitContainersVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobTemplateSpecEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.VolumeMounts)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Env
+	return nil
 }
-func resolveBatchJobTemplateSpecInitContainersVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobTemplateSpecImagePullSecrets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(batchv1.Job)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.VolumeDevices)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Spec.Template.Spec.ImagePullSecrets
+	return nil
 }
-func resolveBatchJobTemplateSpecInitContainersLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobTemplateSpecTolerations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(batchv1.Job)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.LivenessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Spec.Template.Spec.Tolerations
+	return nil
 }
-func resolveBatchJobTemplateSpecInitContainersReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobTemplateSpecHostAliases(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(batchv1.Job)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.ReadinessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Spec.Template.Spec.HostAliases
+	return nil
 }
-func resolveBatchJobTemplateSpecInitContainersStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
+func fetchBatchJobStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	job, ok := parent.Item.(batchv1.Job)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.StartupProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecInitContainersLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.Lifecycle)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-
-func resolveBatchJobTemplateSpecInitContainersSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.SecurityContext)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- job.Status.Conditions
+	return nil
 }
