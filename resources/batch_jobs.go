@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	batchv1 "k8s.io/api/batch/v1"
@@ -23,64 +22,76 @@ func BatchJobs() *schema.Table {
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
-				Name:     "name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.Name"),
+				Name:        "name",
+				Description: "Name must be unique within a namespace",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.Name"),
 			},
 			{
-				Name:     "generate_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.GenerateName"),
+				Name:        "generate_name",
+				Description: "GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.GenerateName"),
 			},
 			{
-				Name:     "namespace",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.Namespace"),
+				Name:        "namespace",
+				Description: "Namespace defines the space within which each name must be unique",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.Namespace"),
 			},
 			{
-				Name:     "self_link",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.SelfLink"),
+				Name:        "self_link",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
 			{
-				Name:     "uid",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.UID"),
+				Name:        "uid",
+				Description: "UID is the unique in time and space value for this object",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.UID"),
 			},
 			{
-				Name:     "resource_version",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.ResourceVersion"),
+				Name:        "resource_version",
+				Description: "An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.ResourceVersion"),
 			},
 			{
-				Name:     "generation",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("ObjectMeta.Generation"),
+				Name:        "generation",
+				Description: "A sequence number representing a specific generation of the desired state. Populated by the system",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("ObjectMeta.Generation"),
 			},
 			{
-				Name:     "deletion_grace_period_seconds",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("ObjectMeta.DeletionGracePeriodSeconds"),
+				Name:        "deletion_grace_period_seconds",
+				Description: "Number of seconds allowed for this object to gracefully terminate before it will be removed from the system",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("ObjectMeta.DeletionGracePeriodSeconds"),
 			},
 			{
-				Name:     "labels",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("ObjectMeta.Labels"),
+				Name:        "labels",
+				Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("ObjectMeta.Labels"),
 			},
 			{
-				Name:     "annotations",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("ObjectMeta.Annotations"),
+				Name:        "annotations",
+				Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("ObjectMeta.Annotations"),
 			},
 			{
-				Name:     "finalizers",
-				Type:     schema.TypeStringArray,
-				Resolver: schema.PathResolver("ObjectMeta.Finalizers"),
+				Name:        "finalizers",
+				Description: "Must be empty before the object is deleted from the registry",
+				Type:        schema.TypeStringArray,
+				Resolver:    schema.PathResolver("ObjectMeta.Finalizers"),
 			},
 			{
-				Name:     "cluster_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("ObjectMeta.ClusterName"),
+				Name:        "cluster_name",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
 			{
 				Name:        "parallelism",
@@ -107,9 +118,10 @@ func BatchJobs() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.BackoffLimit"),
 			},
 			{
-				Name:     "selector_match_labels",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("Spec.Selector.MatchLabels"),
+				Name:        "selector_match_labels",
+				Description: "matchLabels is a map of {key,value} pairs",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Selector.MatchLabels"),
 			},
 			{
 				Name:        "manual_selector",
@@ -118,204 +130,244 @@ func BatchJobs() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.ManualSelector"),
 			},
 			{
-				Name:     "template_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Name"),
+				Name:        "template_name",
+				Description: "Name must be unique within a namespace",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Name"),
 			},
 			{
-				Name:     "template_generate_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.GenerateName"),
+				Name:        "template_generate_name",
+				Description: "GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.GenerateName"),
 			},
 			{
-				Name:     "template_namespace",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Namespace"),
+				Name:        "template_namespace",
+				Description: "Namespace defines the space within which each name must be unique",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Namespace"),
 			},
 			{
-				Name:     "template_self_link",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.SelfLink"),
+				Name:        "template_self_link",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.SelfLink"),
 			},
 			{
-				Name:     "template_uid",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.UID"),
+				Name:        "template_uid",
+				Description: "UID is the unique in time and space value for this object",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.UID"),
 			},
 			{
-				Name:     "template_resource_version",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.ResourceVersion"),
+				Name:        "template_resource_version",
+				Description: "An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.ResourceVersion"),
 			},
 			{
-				Name:     "template_generation",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Generation"),
+				Name:        "template_generation",
+				Description: "A sequence number representing a specific generation of the desired state. Populated by the system",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Generation"),
 			},
 			{
-				Name:     "template_deletion_grace_period_seconds",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.DeletionGracePeriodSeconds"),
+				Name:        "template_deletion_grace_period_seconds",
+				Description: "Number of seconds allowed for this object to gracefully terminate before it will be removed from the system",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.DeletionGracePeriodSeconds"),
 			},
 			{
-				Name:     "template_labels",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Labels"),
+				Name:        "template_labels",
+				Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Labels"),
 			},
 			{
-				Name:     "template_annotations",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Annotations"),
+				Name:        "template_annotations",
+				Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Annotations"),
 			},
 			{
-				Name:     "template_finalizers",
-				Type:     schema.TypeStringArray,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.Finalizers"),
+				Name:        "template_finalizers",
+				Description: "Must be empty before the object is deleted from the registry",
+				Type:        schema.TypeStringArray,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.Finalizers"),
 			},
 			{
-				Name:     "template_cluster_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.ObjectMeta.ClusterName"),
+				Name:        "template_cluster_name",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.ObjectMeta.ClusterName"),
 			},
 			{
-				Name:     "template_restart_policy",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.RestartPolicy"),
+				Name:        "template_spec_restart_policy",
+				Description: "Restart policy for all containers within the pod. One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.RestartPolicy"),
 			},
 			{
-				Name:     "template_termination_grace_period_seconds",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.TerminationGracePeriodSeconds"),
+				Name:        "template_spec_termination_grace_period_seconds",
+				Description: "Optional duration in seconds the pod needs to terminate gracefully",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.TerminationGracePeriodSeconds"),
 			},
 			{
-				Name:     "template_active_deadline_seconds",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.ActiveDeadlineSeconds"),
+				Name:        "template_spec_active_deadline_seconds",
+				Description: "Optional duration in seconds the pod may be active on the node relative to StartTime before the system will actively try to mark it failed and kill associated containers. Value must be a positive integer. +optional",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.ActiveDeadlineSeconds"),
 			},
 			{
-				Name:     "template_dns_policy",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.DNSPolicy"),
+				Name:        "template_spec_dns_policy",
+				Description: "Set DNS policy for the pod. Defaults to \"ClusterFirst\". Valid values are 'ClusterFirstWithHostNet', 'ClusterFirst', 'Default' or 'None'. DNS parameters given in DNSConfig will be merged with the policy selected with DNSPolicy. To have DNS options set along with hostNetwork, you have to specify DNS policy explicitly to 'ClusterFirstWithHostNet'. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.DNSPolicy"),
 			},
 			{
-				Name:     "template_node_selector",
-				Type:     schema.TypeJSON,
-				Resolver: schema.PathResolver("Spec.Template.Spec.NodeSelector"),
+				Name:        "template_spec_node_selector",
+				Description: "NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ +optional +mapType=atomic",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.NodeSelector"),
 			},
 			{
-				Name:     "template_service_account_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.ServiceAccountName"),
+				Name:        "template_spec_service_account_name",
+				Description: "ServiceAccountName is the name of the ServiceAccount to use to run this pod. More info: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.ServiceAccountName"),
 			},
 			{
-				Name:     "template_deprecated_service_account",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.DeprecatedServiceAccount"),
+				Name:        "template_spec_deprecated_service_account",
+				Description: "DeprecatedServiceAccount is a depreciated alias for ServiceAccountName. Deprecated: Use serviceAccountName instead. +k8s:conversion-gen=false +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.DeprecatedServiceAccount"),
 			},
 			{
-				Name:     "template_automount_service_account_token",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.AutomountServiceAccountToken"),
+				Name:        "template_spec_automount_service_account_token",
+				Description: "AutomountServiceAccountToken indicates whether a service account token should be automatically mounted. +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.AutomountServiceAccountToken"),
 			},
 			{
-				Name:     "template_node_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.NodeName"),
+				Name:        "template_spec_node_name",
+				Description: "NodeName is a request to schedule this pod onto a specific node",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.NodeName"),
 			},
 			{
-				Name:     "template_host_network",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.HostNetwork"),
+				Name:        "template_spec_host_network",
+				Description: "Host networking requested for this pod",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.HostNetwork"),
 			},
 			{
-				Name:     "template_host_pid",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.HostPID"),
+				Name:        "template_spec_host_pid",
+				Description: "Use the host's pid namespace. Optional: Default to false. +k8s:conversion-gen=false +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.HostPID"),
 			},
 			{
-				Name:     "template_host_ipc",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.HostIPC"),
+				Name:        "template_spec_host_ipc",
+				Description: "Use the host's ipc namespace. Optional: Default to false. +k8s:conversion-gen=false +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.HostIPC"),
 			},
 			{
-				Name:     "template_share_process_namespace",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.ShareProcessNamespace"),
+				Name:        "template_spec_share_process_namespace",
+				Description: "Share a single process namespace between all of the containers in a pod. When this is set containers will be able to view and signal processes from other containers in the same pod, and the first process in each container will not be assigned PID 1. HostPID and ShareProcessNamespace cannot both be set. Optional: Default to false. +k8s:conversion-gen=false +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.ShareProcessNamespace"),
 			},
 			{
-				Name:     "template_security_context",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecSecurityContext,
+				Name:        "template_spec_security_context",
+				Description: "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecSecurityContext,
 			},
 			{
-				Name:     "template_hostname",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.Hostname"),
+				Name:        "template_spec_hostname",
+				Description: "Specifies the hostname of the Pod If not specified, the pod's hostname will be set to a system-defined value. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.Hostname"),
 			},
 			{
-				Name:     "template_subdomain",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.Subdomain"),
+				Name:        "template_spec_subdomain",
+				Description: "If specified, the fully qualified Pod hostname will be \"<hostname>.<subdomain>.<pod namespace>.svc.<cluster domain>\". If not specified, the pod will not have a domainname at all. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.Subdomain"),
 			},
 			{
-				Name:     "template_affinity",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecAffinity,
+				Name:        "template_spec_affinity",
+				Description: "If specified, the pod's scheduling constraints +optional",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecAffinity,
 			},
 			{
-				Name:     "template_scheduler_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SchedulerName"),
+				Name:        "template_spec_scheduler_name",
+				Description: "If specified, the pod will be dispatched by specified scheduler. If not specified, the pod will be dispatched by default scheduler. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.SchedulerName"),
 			},
 			{
-				Name:     "template_priority_class_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.PriorityClassName"),
+				Name:        "template_spec_priority_class_name",
+				Description: "If specified, indicates the pod's priority",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.PriorityClassName"),
 			},
 			{
-				Name:     "template_priority",
-				Type:     schema.TypeInt,
-				Resolver: schema.PathResolver("Spec.Template.Spec.Priority"),
+				Name:        "template_spec_priority",
+				Description: "The priority value",
+				Type:        schema.TypeInt,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.Priority"),
 			},
 			{
-				Name:     "template_dns_config",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecDNSConfig,
+				Name:        "template_spec_dns_config",
+				Description: "Specifies the DNS parameters of a pod. Parameters specified here will be merged to the generated DNS configuration based on DNSPolicy. +optional",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecDnsConfig,
 			},
 			{
-				Name:     "template_readiness_gates",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecReadinessGates,
+				Name:        "template_spec_readiness_gates",
+				Description: "If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to \"True\" More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates +optional",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecReadinessGates,
 			},
 			{
-				Name:     "template_runtime_class_name",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.RuntimeClassName"),
+				Name:        "template_spec_runtime_class_name",
+				Description: "RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.RuntimeClassName"),
 			},
 			{
-				Name:     "template_enable_service_links",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.EnableServiceLinks"),
+				Name:        "template_spec_enable_service_links",
+				Description: "EnableServiceLinks indicates whether information about services should be injected into pod's environment variables, matching the syntax of Docker links. Optional: Defaults to true. +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.EnableServiceLinks"),
 			},
 			{
-				Name:     "template_preemption_policy",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("Spec.Template.Spec.PreemptionPolicy"),
+				Name:        "template_spec_preemption_policy",
+				Description: "PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. This field is beta-level, gated by the NonPreemptingPriority feature-gate. +optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.PreemptionPolicy"),
 			},
 			{
-				Name:     "template_overhead",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecOverhead,
+				Name:        "template_spec_overhead",
+				Description: "Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecOverhead,
 			},
 			{
-				Name:     "template_topology_spread_constraints",
-				Type:     schema.TypeJSON,
-				Resolver: resolveBatchJobTemplateSpecTopologySpreadConstraints,
+				Name:        "template_spec_topology_spread_constraints",
+				Description: "TopologySpreadConstraints describes how a group of pods ought to spread across topology domains",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveBatchJobTemplateSpecTopologySpreadConstraints,
 			},
 			{
-				Name:     "template_set_hostname_as_fqdn",
-				Type:     schema.TypeBool,
-				Resolver: schema.PathResolver("Spec.Template.Spec.SetHostnameAsFQDN"),
+				Name:        "template_spec_set_hostname_as_fqdn",
+				Description: "If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default). In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname). In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters to FQDN. If a pod does not have FQDN, this has no effect. Default to false. +optional",
+				Type:        schema.TypeBool,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.SetHostnameAsFQDN"),
 			},
 			{
 				Name:        "ttl_seconds_after_finished",
@@ -570,7 +622,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_volumes",
+				Name:        "k8s_batch_job_template_spec_volumes",
 				Description: "Volume represents a named volume in a pod that may be accessed by any container in the pod.",
 				Resolver:    fetchBatchJobTemplateSpecVolumes,
 				Columns: []schema.Column{
@@ -618,7 +670,7 @@ func BatchJobs() *schema.Table {
 						Name:        "aws_elastic_block_store",
 						Description: "AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeAWSElasticBlockStore,
+						Resolver:    resolveBatchJobTemplateSpecVolumesAwsElasticBlockStore,
 					},
 					{
 						Name:        "git_repo",
@@ -634,13 +686,13 @@ func BatchJobs() *schema.Table {
 						Name:        "nfs",
 						Description: "NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeNfs,
+						Resolver:    resolveBatchJobTemplateSpecVolumesNfs,
 					},
 					{
 						Name:        "iscsi",
 						Description: "ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeIscsi,
+						Resolver:    resolveBatchJobTemplateSpecVolumesIscsi,
 					},
 					{
 						Name:        "glusterfs",
@@ -656,7 +708,7 @@ func BatchJobs() *schema.Table {
 						Name:        "rbd",
 						Description: "RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeRbd,
+						Resolver:    resolveBatchJobTemplateSpecVolumesRbd,
 					},
 					{
 						Name:        "flex_volume",
@@ -683,7 +735,7 @@ func BatchJobs() *schema.Table {
 						Name:        "downward_api",
 						Description: "DownwardAPI represents downward API about the pod that should populate this volume +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeDownwardAPI,
+						Resolver:    resolveBatchJobTemplateSpecVolumesDownwardApi,
 					},
 					{
 						Name:        "fc",
@@ -741,13 +793,13 @@ func BatchJobs() *schema.Table {
 						Name:        "storage_os",
 						Description: "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeStorageOs,
+						Resolver:    resolveBatchJobTemplateSpecVolumesStorageOs,
 					},
 					{
 						Name:        "csi",
 						Description: "CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature). +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecVolumeCsi,
+						Resolver:    resolveBatchJobTemplateSpecVolumesCsi,
 					},
 					{
 						Name:        "ephemeral",
@@ -757,9 +809,9 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_containers",
+				Name:        "k8s_batch_job_template_spec_init_containers",
 				Description: "A single application container that you want to run within a pod.",
-				Resolver:    fetchBatchJobTemplateSpecContainers,
+				Resolver:    fetchBatchJobTemplateSpecInitContainers,
 				Columns: []schema.Column{
 					{
 						Name:        "job_cq_id",
@@ -796,7 +848,7 @@ func BatchJobs() *schema.Table {
 						Name:        "env_from",
 						Description: "List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerEnvFrom,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersEnvFrom,
 					},
 					{
 						Name:        "resources_limits",
@@ -814,37 +866,37 @@ func BatchJobs() *schema.Table {
 						Name:        "volume_mounts",
 						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerVolumeMounts,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersVolumeMounts,
 					},
 					{
 						Name:        "volume_devices",
 						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerVolumeDevices,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
 						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerLivenessProbe,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersLivenessProbe,
 					},
 					{
 						Name:        "readiness_probe",
 						Description: "Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerReadinessProbe,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersReadinessProbe,
 					},
 					{
 						Name:        "startup_probe",
 						Description: "StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerStartupProbe,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersStartupProbe,
 					},
 					{
 						Name:        "lifecycle",
 						Description: "Actions that the management system should take in response to container lifecycle events. Cannot be updated. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerLifecycle,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersLifecycle,
 					},
 					{
 						Name:        "termination_message_path",
@@ -865,7 +917,7 @@ func BatchJobs() *schema.Table {
 						Name:        "security_context",
 						Description: "SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecContainerSecurityContext,
+						Resolver:    resolveBatchJobTemplateSpecInitContainersSecurityContext,
 					},
 					{
 						Name:        "stdin",
@@ -886,13 +938,13 @@ func BatchJobs() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_batch_job_template_container_ports",
+						Name:        "k8s_batch_job_template_spec_init_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
-						Resolver:    fetchBatchJobTemplateSpecContainerPorts,
+						Resolver:    fetchBatchJobTemplateSpecInitContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
+								Name:        "job_template_spec_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -925,13 +977,13 @@ func BatchJobs() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_batch_job_template_container_envs",
+						Name:        "k8s_batch_job_template_spec_init_container_env",
 						Description: "EnvVar represents an environment variable present in a Container.",
-						Resolver:    fetchBatchJobTemplateSpecContainerEnvs,
+						Resolver:    fetchBatchJobTemplateSpecInitContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
+								Name:        "job_template_spec_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1015,7 +1067,265 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_ephemeral_containers",
+				Name:        "k8s_batch_job_template_spec_containers",
+				Description: "A single application container that you want to run within a pod.",
+				Resolver:    fetchBatchJobTemplateSpecContainers,
+				Columns: []schema.Column{
+					{
+						Name:        "job_cq_id",
+						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "name",
+						Description: "Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "image",
+						Description: "Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets. +optional",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "command",
+						Description: "Entrypoint array",
+						Type:        schema.TypeStringArray,
+					},
+					{
+						Name:        "args",
+						Description: "Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment",
+						Type:        schema.TypeStringArray,
+					},
+					{
+						Name:        "working_dir",
+						Description: "Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. +optional",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "env_from",
+						Description: "List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersEnvFrom,
+					},
+					{
+						Name:        "resources_limits",
+						Description: "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    schema.PathResolver("Resources.Limits"),
+					},
+					{
+						Name:        "resources_requests",
+						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    schema.PathResolver("Resources.Requests"),
+					},
+					{
+						Name:        "volume_mounts",
+						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersVolumeMounts,
+					},
+					{
+						Name:        "volume_devices",
+						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersVolumeDevices,
+					},
+					{
+						Name:        "liveness_probe",
+						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersLivenessProbe,
+					},
+					{
+						Name:        "readiness_probe",
+						Description: "Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersReadinessProbe,
+					},
+					{
+						Name:        "startup_probe",
+						Description: "StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersStartupProbe,
+					},
+					{
+						Name:        "lifecycle",
+						Description: "Actions that the management system should take in response to container lifecycle events. Cannot be updated. +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersLifecycle,
+					},
+					{
+						Name:        "termination_message_path",
+						Description: "Optional: Path at which the file to which the container's termination message will be written is mounted into the container's filesystem. Message written is intended to be brief final status, such as an assertion failure message. Will be truncated by the node if greater than 4096 bytes",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "termination_message_policy",
+						Description: "Indicate how the termination message should be populated",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "image_pull_policy",
+						Description: "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images +optional",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "security_context",
+						Description: "SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ +optional",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveBatchJobTemplateSpecContainersSecurityContext,
+					},
+					{
+						Name:        "stdin",
+						Description: "Whether this container should allocate a buffer for stdin in the container runtime",
+						Type:        schema.TypeBool,
+					},
+					{
+						Name:        "stdin_once",
+						Description: "Whether the container runtime should close the stdin channel after it has been opened by a single attach",
+						Type:        schema.TypeBool,
+					},
+					{
+						Name:        "tty",
+						Description: "Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. +optional",
+						Type:        schema.TypeBool,
+						Resolver:    schema.PathResolver("TTY"),
+					},
+				},
+				Relations: []*schema.Table{
+					{
+						Name:        "k8s_batch_job_template_spec_container_ports",
+						Description: "ContainerPort represents a network port in a single container.",
+						Resolver:    fetchBatchJobTemplateSpecContainerPorts,
+						Columns: []schema.Column{
+							{
+								Name:        "job_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "name",
+								Description: "If specified, this must be an IANA_SVC_NAME and unique within the pod",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "host_port",
+								Description: "Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this. +optional",
+								Type:        schema.TypeInt,
+							},
+							{
+								Name:        "container_port",
+								Description: "Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.",
+								Type:        schema.TypeInt,
+							},
+							{
+								Name:        "protocol",
+								Description: "Protocol for port",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "host_ip",
+								Description: "What host IP to bind the external port to. +optional",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("HostIP"),
+							},
+						},
+					},
+					{
+						Name:        "k8s_batch_job_template_spec_container_env",
+						Description: "EnvVar represents an environment variable present in a Container.",
+						Resolver:    fetchBatchJobTemplateSpecContainerEnvs,
+						Columns: []schema.Column{
+							{
+								Name:        "job_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "name",
+								Description: "Name of the environment variable",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value",
+								Description: "Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value_from_field_ref_api_version",
+								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"v1\". +optional",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
+							},
+							{
+								Name:        "value_from_field_ref_field_path",
+								Description: "Path of the field to select in the specified API version.",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.FieldRef.FieldPath"),
+							},
+							{
+								Name:        "value_from_resource_field_ref_container_name",
+								Description: "Container name: required for volumes, optional for env vars +optional",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.ContainerName"),
+							},
+							{
+								Name:        "value_from_resource_field_ref_resource",
+								Description: "Required: resource to select",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.Resource"),
+							},
+							{
+								Name:     "value_from_resource_field_ref_divisor_format",
+								Type:     schema.TypeString,
+								Resolver: schema.PathResolver("ValueFrom.ResourceFieldRef.Divisor.Format"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_local_object_reference_name",
+								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_key",
+								Description: "The key to select.",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Key"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_optional",
+								Description: "Specify whether the ConfigMap or its key must be defined +optional",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Optional"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_local_object_reference_name",
+								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_key",
+								Description: "The key of the secret to select from",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Key"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_optional",
+								Description: "Specify whether the Secret or its key must be defined +optional",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
+							},
+						},
+					},
+				},
+			},
+			{
+				Name:        "k8s_batch_job_template_spec_ephemeral_containers",
 				Description: "An EphemeralContainer is a container that may be added temporarily to an existing pod for user-initiated activities such as debugging",
 				Resolver:    fetchBatchJobTemplateSpecEphemeralContainers,
 				Columns: []schema.Column{
@@ -1059,7 +1369,7 @@ func BatchJobs() *schema.Table {
 						Name:        "env_from",
 						Description: "List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerEnvFrom,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersEnvFrom,
 					},
 					{
 						Name:        "resources_limits",
@@ -1077,37 +1387,37 @@ func BatchJobs() *schema.Table {
 						Name:        "volume_mounts",
 						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerVolumeMounts,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersVolumeMounts,
 					},
 					{
 						Name:        "volume_devices",
 						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerVolumeDevices,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersVolumeDevices,
 					},
 					{
 						Name:        "liveness_probe",
 						Description: "Probes are not allowed for ephemeral containers. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerLivenessProbe,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersLivenessProbe,
 					},
 					{
 						Name:        "readiness_probe",
 						Description: "Probes are not allowed for ephemeral containers. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerReadinessProbe,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersReadinessProbe,
 					},
 					{
 						Name:        "startup_probe",
 						Description: "Probes are not allowed for ephemeral containers. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerStartupProbe,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersStartupProbe,
 					},
 					{
 						Name:        "lifecycle",
 						Description: "Lifecycle is not allowed for ephemeral containers. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerLifecycle,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersLifecycle,
 					},
 					{
 						Name:        "termination_message_path",
@@ -1131,7 +1441,7 @@ func BatchJobs() *schema.Table {
 						Name:        "security_context",
 						Description: "Optional: SecurityContext defines the security options the ephemeral container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. +optional",
 						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecEphemeralContainerSecurityContext,
+						Resolver:    resolveBatchJobTemplateSpecEphemeralContainersSecurityContext,
 					},
 					{
 						Name:        "stdin",
@@ -1159,13 +1469,13 @@ func BatchJobs() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_batch_job_template_ephemeral_container_ports",
+						Name:        "k8s_batch_job_template_spec_ephemeral_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
+								Name:        "job_template_spec_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1198,13 +1508,13 @@ func BatchJobs() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_batch_job_template_ephemeral_container_envs",
+						Name:        "k8s_batch_job_template_spec_ephemeral_container_env",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
+								Name:        "job_template_spec_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1288,7 +1598,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_image_pull_secrets",
+				Name:        "k8s_batch_job_template_spec_image_pull_secrets",
 				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic",
 				Resolver:    fetchBatchJobTemplateSpecImagePullSecrets,
 				Columns: []schema.Column{
@@ -1306,7 +1616,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_tolerations",
+				Name:        "k8s_batch_job_template_spec_tolerations",
 				Description: "The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.",
 				Resolver:    fetchBatchJobTemplateSpecTolerations,
 				Columns: []schema.Column{
@@ -1344,7 +1654,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_host_aliases",
+				Name:        "k8s_batch_job_template_spec_host_aliases",
 				Description: "HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file.",
 				Resolver:    fetchBatchJobTemplateSpecHostAliases,
 				Columns: []schema.Column{
@@ -1400,264 +1710,6 @@ func BatchJobs() *schema.Table {
 					},
 				},
 			},
-			{
-				Name:        "k8s_batch_job_template_init_containers",
-				Description: "A single application container that you want to run within a pod.",
-				Resolver:    fetchBatchJobTemplateSpecInitContainers,
-				Columns: []schema.Column{
-					{
-						Name:        "job_cq_id",
-						Description: "Unique CloudQuery ID of k8s_batch_jobs table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "image",
-						Description: "Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets. +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "command",
-						Description: "Entrypoint array",
-						Type:        schema.TypeStringArray,
-					},
-					{
-						Name:        "args",
-						Description: "Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment",
-						Type:        schema.TypeStringArray,
-					},
-					{
-						Name:        "working_dir",
-						Description: "Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "env_from",
-						Description: "List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerEnvFrom,
-					},
-					{
-						Name:        "resources_limits",
-						Description: "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Resources.Limits"),
-					},
-					{
-						Name:        "resources_requests",
-						Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Resources.Requests"),
-					},
-					{
-						Name:        "volume_mounts",
-						Description: "Pod volumes to mount into the container's filesystem. Cannot be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerVolumeMounts,
-					},
-					{
-						Name:        "volume_devices",
-						Description: "volumeDevices is the list of block devices to be used by the container. +patchMergeKey=devicePath +patchStrategy=merge +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerVolumeDevices,
-					},
-					{
-						Name:        "liveness_probe",
-						Description: "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerLivenessProbe,
-					},
-					{
-						Name:        "readiness_probe",
-						Description: "Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerReadinessProbe,
-					},
-					{
-						Name:        "startup_probe",
-						Description: "StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerStartupProbe,
-					},
-					{
-						Name:        "lifecycle",
-						Description: "Actions that the management system should take in response to container lifecycle events. Cannot be updated. +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerLifecycle,
-					},
-					{
-						Name:        "termination_message_path",
-						Description: "Optional: Path at which the file to which the container's termination message will be written is mounted into the container's filesystem. Message written is intended to be brief final status, such as an assertion failure message. Will be truncated by the node if greater than 4096 bytes",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "termination_message_policy",
-						Description: "Indicate how the termination message should be populated",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "image_pull_policy",
-						Description: "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images +optional",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "security_context",
-						Description: "SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ +optional",
-						Type:        schema.TypeJSON,
-						Resolver:    resolveBatchJobTemplateSpecInitContainerSecurityContext,
-					},
-					{
-						Name:        "stdin",
-						Description: "Whether this container should allocate a buffer for stdin in the container runtime",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "stdin_once",
-						Description: "Whether the container runtime should close the stdin channel after it has been opened by a single attach",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "tty",
-						Description: "Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. +optional",
-						Type:        schema.TypeBool,
-						Resolver:    schema.PathResolver("TTY"),
-					},
-				},
-				Relations: []*schema.Table{
-					{
-						Name:        "k8s_batch_job_template_init_container_ports",
-						Description: "ContainerPort represents a network port in a single container.",
-						Resolver:    fetchBatchJobTemplateSpecInitContainerPorts,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "If specified, this must be an IANA_SVC_NAME and unique within the pod",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "host_port",
-								Description: "Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this. +optional",
-								Type:        schema.TypeInt,
-							},
-							{
-								Name:        "container_port",
-								Description: "Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.",
-								Type:        schema.TypeInt,
-							},
-							{
-								Name:        "protocol",
-								Description: "Protocol for port",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "host_ip",
-								Description: "What host IP to bind the external port to. +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("HostIP"),
-							},
-						},
-					},
-					{
-						Name:        "k8s_batch_job_template_init_container_envs",
-						Description: "EnvVar represents an environment variable present in a Container.",
-						Resolver:    fetchBatchJobTemplateSpecInitContainerEnvs,
-						Columns: []schema.Column{
-							{
-								Name:        "job_template_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "Name of the environment variable",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value_from_field_ref_api_version",
-								Description: "Version of the schema the FieldPath is written in terms of, defaults to \"v1\". +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.FieldRef.APIVersion"),
-							},
-							{
-								Name:        "value_from_field_ref_field_path",
-								Description: "Path of the field to select in the specified API version.",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.FieldRef.FieldPath"),
-							},
-							{
-								Name:        "value_from_resource_field_ref_container_name",
-								Description: "Container name: required for volumes, optional for env vars +optional",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.ContainerName"),
-							},
-							{
-								Name:        "value_from_resource_field_ref_resource",
-								Description: "Required: resource to select",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ResourceFieldRef.Resource"),
-							},
-							{
-								Name:     "value_from_resource_field_ref_divisor_format",
-								Type:     schema.TypeString,
-								Resolver: schema.PathResolver("ValueFrom.ResourceFieldRef.Divisor.Format"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_local_object_reference_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_key",
-								Description: "The key to select.",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Key"),
-							},
-							{
-								Name:        "value_from_config_map_key_ref_optional",
-								Description: "Specify whether the ConfigMap or its key must be defined +optional",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Optional"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_local_object_reference_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_key",
-								Description: "The key of the secret to select from",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Key"),
-							},
-							{
-								Name:        "value_from_secret_key_ref_optional",
-								Description: "Specify whether the Secret or its key must be defined +optional",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
-							},
-						},
-					},
-				},
-			},
 		},
 	}
 }
@@ -1665,6 +1717,7 @@ func BatchJobs() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
+
 func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	client := meta.(*client.Client).Services.Jobs
 	opts := metav1.ListOptions{}
@@ -1707,7 +1760,7 @@ func resolveBatchJobTemplateSpecAffinity(ctx context.Context, meta schema.Client
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecDNSConfig(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecDnsConfig(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)
@@ -1812,89 +1865,32 @@ func fetchBatchJobTemplateSpecVolumes(ctx context.Context, meta schema.ClientMet
 	res <- job.Spec.Template.Spec.Volumes
 	return nil
 }
-func resolveBatchJobTemplateSpecVolumeAWSElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
+func fetchBatchJobTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	job, ok := parent.Item.(batchv1.Job)
 	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.AWSElasticBlockStore)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- job.Spec.Template.Spec.InitContainers
+	return nil
 }
-func resolveBatchJobTemplateSpecVolumeNfs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
+func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.NFS)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Ports
+	return nil
 }
-func resolveBatchJobTemplateSpecVolumeIscsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
+func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
 	}
 
-	b, err := json.Marshal(p.ISCSI)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecVolumeRbd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
-	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.RBD)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecVolumeDownwardAPI(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
-	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.DownwardAPI)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecVolumeStorageOs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
-	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.StorageOS)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecVolumeCsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Volume)
-	if !ok {
-		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.CSI)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
+	res <- p.Env
+	return nil
 }
 func fetchBatchJobTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	job, ok := parent.Item.(batchv1.Job)
@@ -1904,102 +1900,6 @@ func fetchBatchJobTemplateSpecContainers(ctx context.Context, meta schema.Client
 
 	res <- job.Spec.Template.Spec.Containers
 	return nil
-}
-func resolveBatchJobTemplateSpecContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.EnvFrom)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.VolumeMounts)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.VolumeDevices)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.LivenessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.ReadinessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.StartupProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.Lifecycle)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.Container)
-	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.SecurityContext)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
 }
 func fetchBatchJobTemplateSpecContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.Container)
@@ -2027,102 +1927,6 @@ func fetchBatchJobTemplateSpecEphemeralContainers(ctx context.Context, meta sche
 
 	res <- p.Spec.Template.Spec.EphemeralContainers
 	return nil
-}
-func resolveBatchJobTemplateSpecEphemeralContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.EnvFrom)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.VolumeMounts)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.VolumeDevices)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.LivenessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.ReadinessProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.StartupProbe)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.Lifecycle)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
-}
-func resolveBatchJobTemplateSpecEphemeralContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(corev1.EphemeralContainer)
-	if !ok {
-		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
-	}
-
-	b, err := json.Marshal(p.SecurityContext)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, b)
 }
 func fetchBatchJobTemplateSpecEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(corev1.EphemeralContainer)
@@ -2178,19 +1982,99 @@ func fetchBatchJobStatusConditions(ctx context.Context, meta schema.ClientMeta, 
 	res <- job.Status.Conditions
 	return nil
 }
-func fetchBatchJobTemplateSpecInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	job, ok := parent.Item.(batchv1.Job)
+
+// ====================================================================================================================
+//                                                  User Defined Helpers
+// ====================================================================================================================
+
+func resolveBatchJobTemplateSpecVolumesAwsElasticBlockStore(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
 	if !ok {
-		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
 	}
 
-	res <- job.Spec.Template.Spec.InitContainers
-	return nil
+	b, err := json.Marshal(p.AWSElasticBlockStore)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecVolumesNfs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.NFS)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecVolumesIscsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.ISCSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecVolumesRbd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.RBD)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecVolumesDownwardApi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.DownwardAPI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecVolumesStorageOs(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.StorageOS)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecVolumesCsi(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Volume)
+	if !ok {
+		return fmt.Errorf("not a corev1.Volume instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.CSI)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
-		return fmt.Errorf("not a corev1.Containerb instance: %T", resource.Item)
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
 	}
 
 	b, err := json.Marshal(p.EnvFrom)
@@ -2199,7 +2083,7 @@ func resolveBatchJobTemplateSpecInitContainerEnvFrom(ctx context.Context, meta s
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2211,7 +2095,7 @@ func resolveBatchJobTemplateSpecInitContainerVolumeMounts(ctx context.Context, m
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2223,7 +2107,7 @@ func resolveBatchJobTemplateSpecInitContainerVolumeDevices(ctx context.Context, 
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2235,7 +2119,7 @@ func resolveBatchJobTemplateSpecInitContainerLivenessProbe(ctx context.Context, 
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2247,7 +2131,7 @@ func resolveBatchJobTemplateSpecInitContainerReadinessProbe(ctx context.Context,
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2259,7 +2143,7 @@ func resolveBatchJobTemplateSpecInitContainerStartupProbe(ctx context.Context, m
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2271,7 +2155,7 @@ func resolveBatchJobTemplateSpecInitContainerLifecycle(ctx context.Context, meta
 	}
 	return resource.Set(c.Name, b)
 }
-func resolveBatchJobTemplateSpecInitContainerSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobTemplateSpecContainersSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
@@ -2283,21 +2167,196 @@ func resolveBatchJobTemplateSpecInitContainerSecurityContext(ctx context.Context
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchBatchJobTemplateSpecInitContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
+func resolveBatchJobTemplateSpecEphemeralContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
-	res <- p.Ports
-	return nil
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
-func fetchBatchJobTemplateSpecInitContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(corev1.Container)
+func resolveBatchJobTemplateSpecEphemeralContainersVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
 	if !ok {
-		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
 	}
 
-	res <- p.Env
-	return nil
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecEphemeralContainersSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.EphemeralContainer)
+	if !ok {
+		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersEnvFrom(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Containerb instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.EnvFrom)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersVolumeMounts(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeMounts)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersVolumeDevices(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.VolumeDevices)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersLivenessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.LivenessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersReadinessProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.ReadinessProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersStartupProbe(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.StartupProbe)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+func resolveBatchJobTemplateSpecInitContainersLifecycle(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.Lifecycle)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
+
+func resolveBatchJobTemplateSpecInitContainersSecurityContext(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.Container)
+	if !ok {
+		return fmt.Errorf("not a corev1.Container instance: %T", resource.Item)
+	}
+
+	b, err := json.Marshal(p.SecurityContext)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
