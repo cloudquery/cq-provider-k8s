@@ -18,7 +18,6 @@ func fakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	}
 }
 
-//nolint
 func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	var ds appsv1.DaemonSet
 	ds.Spec.Template.Spec.Volumes = []corev1.Volume{fakeVolume(t)}

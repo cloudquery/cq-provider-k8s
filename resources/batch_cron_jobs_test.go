@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"github.com/cloudquery/faker/v3"
 	"testing"
 
 	"github.com/cloudquery/cq-provider-k8s/client"
@@ -24,26 +25,19 @@ func createBatchCronJobs(t *testing.T, ctrl *gomock.Controller) client.Services 
 
 func fakeCronJob(t *testing.T) batchv1.CronJob {
 	var job batchv1.CronJob
-	fakeThroughPointers(t, []interface{}{
-		&job.TypeMeta,
-		&job.ObjectMeta,
-		&job.Spec.Schedule,
-		&job.Spec.StartingDeadlineSeconds,
-		&job.Spec.ConcurrencyPolicy,
-		&job.Spec.Suspend,
-		&job.Spec.SuccessfulJobsHistoryLimit,
-		&job.Spec.FailedJobsHistoryLimit,
-		&job.Spec.JobTemplate.ObjectMeta,
-		&job.Spec.JobTemplate.Spec.Parallelism,
-		&job.Spec.JobTemplate.Spec.Completions,
-		&job.Spec.JobTemplate.Spec.ActiveDeadlineSeconds,
-		&job.Spec.JobTemplate.Spec.BackoffLimit,
-		&job.Spec.JobTemplate.Spec.Selector,
-		&job.Spec.JobTemplate.Spec.ManualSelector,
-		&job.Spec.JobTemplate.Spec.TTLSecondsAfterFinished,
-		&job.Spec.JobTemplate.Spec.CompletionMode,
-		&job.Spec.JobTemplate.Spec.Suspend,
-	})
+	if err := faker.FakeDataSkipFields(&job, []string{
+		"Spec"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := faker.FakeDataSkipFields(&job.Spec, []string{
+		"JobTemplate", "ConcurrencyPolicy"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := faker.FakeData(&job.Spec.JobTemplate.ObjectMeta); err != nil {
+		t.Fatal(err)
+	}
+	job.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+	job.Spec.JobTemplate.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	job.Spec.JobTemplate.Spec.Template = fakePodTemplateSpec(t)
 	return job
 }
