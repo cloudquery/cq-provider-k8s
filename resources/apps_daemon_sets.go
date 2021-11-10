@@ -40,7 +40,7 @@ func AppsDaemonSets() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -94,7 +94,7 @@ func AppsDaemonSets() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -160,7 +160,7 @@ func AppsDaemonSets() *schema.Table {
 			},
 			{
 				Name:        "revision_history_limit",
-				Description: "The number of old history to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10. +optional",
+				Description: "The number of old history to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10.",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Spec.RevisionHistoryLimit"),
 			},
@@ -190,25 +190,25 @@ func AppsDaemonSets() *schema.Table {
 			},
 			{
 				Name:        "status_observed_generation",
-				Description: "The most recent generation observed by the daemon set controller. +optional",
+				Description: "The most recent generation observed by the daemon set controller.",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("Status.ObservedGeneration"),
 			},
 			{
 				Name:        "status_updated_number_scheduled",
-				Description: "The total number of nodes that are running updated daemon pod +optional",
+				Description: "The total number of nodes that are running updated daemon pod",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.UpdatedNumberScheduled"),
 			},
 			{
 				Name:        "status_number_available",
-				Description: "The number of nodes that should be running the daemon pod and have one or more of the daemon pod running and available (ready for at least spec.minReadySeconds) +optional",
+				Description: "The number of nodes that should be running the daemon pod and have one or more of the daemon pod running and available (ready for at least spec.minReadySeconds)",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.NumberAvailable"),
 			},
 			{
 				Name:        "status_number_unavailable",
-				Description: "The number of nodes that should be running the daemon pod and have none of the daemon pod running and available (ready for at least spec.minReadySeconds) +optional",
+				Description: "The number of nodes that should be running the daemon pod and have none of the daemon pod running and available (ready for at least spec.minReadySeconds)",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.NumberUnavailable"),
 			},
@@ -271,12 +271,12 @@ func AppsDaemonSets() *schema.Table {
 					},
 					{
 						Name:        "reason",
-						Description: "The reason for the condition's last transition. +optional",
+						Description: "The reason for the condition's last transition.",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "message",
-						Description: "A human readable message indicating details about the transition. +optional",
+						Description: "A human readable message indicating details about the transition.",
 						Type:        schema.TypeString,
 					},
 				},
