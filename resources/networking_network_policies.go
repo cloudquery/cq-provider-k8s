@@ -19,13 +19,13 @@ func NetworkingNetworkPolicies() *schema.Table {
 		Columns: []schema.Column{
 			{
 				Name:        "kind",
-				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
 				Name:        "api_version",
-				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -49,7 +49,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -103,7 +103,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -121,7 +121,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 			},
 			{
 				Name:        "policy_types",
-				Description: "List of rule types that the NetworkPolicy relates to. Valid options are [\"Ingress\"], [\"Egress\"], or [\"Ingress\", \"Egress\"]. If this field is not specified, it will default based on the existence of Ingress or Egress rules; policies that contain an Egress section are assumed to affect Egress, and all policies (whether or not they contain an Ingress section) are assumed to affect Ingress. If you want to write an egress-only policy, you must explicitly specify policyTypes [ \"Egress\" ]. Likewise, if you want to write a policy that specifies that no egress is allowed, you must specify a policyTypes value that include \"Egress\" (since such a policy would not include an Egress section and would otherwise default to just [ \"Ingress\" ]). This field is beta-level in 1.8",
+				Description: "List of rule types that the NetworkPolicy relates to. Valid options are [\"Ingress\"], [\"Egress\"], or [\"Ingress\", \"Egress\"]. If this field is not specified, it will default based on the existence of Ingress or Egress rules; policies that contain an Egress section are assumed to affect Egress, and all policies (whether or not they contain an Ingress section) are assumed to affect Ingress. If you want to write an egress-only policy, you must explicitly specify policyTypes [ \"Egress\" ]. Likewise, if you want to write a policy that specifies that no egress is allowed, you must specify a policyTypes value that include \"Egress\" (since such a policy would not include an Egress section and would otherwise default to just [ \"Ingress\" ]). This field is beta-level in 1.8 +optional",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("Spec.PolicyTypes"),
 			},
@@ -224,10 +224,22 @@ func NetworkingNetworkPolicies() *schema.Table {
 								Resolver:    schema.PathResolver("PodSelector.MatchLabels"),
 							},
 							{
+								Name:        "pod_selector_match_expressions",
+								Description: "matchExpressions is a list of label selector requirements",
+								Type:        schema.TypeJSON,
+								Resolver:    resolveNetworkingNetworkPolicyIngressFromsPodSelectorMatchExpressions,
+							},
+							{
 								Name:        "namespace_selector_match_labels",
 								Description: "matchLabels is a map of {key,value} pairs",
 								Type:        schema.TypeJSON,
 								Resolver:    schema.PathResolver("NamespaceSelector.MatchLabels"),
+							},
+							{
+								Name:        "namespace_selector_match_expressions",
+								Description: "matchExpressions is a list of label selector requirements",
+								Type:        schema.TypeJSON,
+								Resolver:    resolveNetworkingNetworkPolicyIngressFromsNamespaceSelectorMatchExpressions,
 							},
 							{
 								Name:        "ip_block_c_id_r",
@@ -237,67 +249,9 @@ func NetworkingNetworkPolicies() *schema.Table {
 							},
 							{
 								Name:        "ip_block_except",
-								Description: "Except is a slice of CIDRs that should not be included within an IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\" Except values will be rejected if they are outside the CIDR range",
+								Description: "Except is a slice of CIDRs that should not be included within an IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\" Except values will be rejected if they are outside the CIDR range +optional",
 								Type:        schema.TypeStringArray,
 								Resolver:    schema.PathResolver("IPBlock.Except"),
-							},
-						},
-						Relations: []*schema.Table{
-							{
-								Name:        "k8s_networking_network_policy_ingress_from_pod_selector_match_expressions",
-								Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-								Resolver:    fetchNetworkingNetworkPolicyIngressFromPodSelectorMatchExpressions,
-								Columns: []schema.Column{
-									{
-										Name:        "network_policy_ingress_from_cq_id",
-										Description: "Unique CloudQuery ID of k8s_networking_network_policy_ingress_from table (FK)",
-										Type:        schema.TypeUUID,
-										Resolver:    schema.ParentIdResolver,
-									},
-									{
-										Name:        "key",
-										Description: "key is the label key that the selector applies to. +patchMergeKey=key +patchStrategy=merge",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "operator",
-										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "values",
-										Description: "values is an array of string values",
-										Type:        schema.TypeStringArray,
-									},
-								},
-							},
-							{
-								Name:        "k8s_networking_network_policy_ingress_from_namespace_selector_match_expressions",
-								Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-								Resolver:    fetchNetworkingNetworkPolicyIngressFromNamespaceSelectorMatchExpressions,
-								Columns: []schema.Column{
-									{
-										Name:        "network_policy_ingress_from_cq_id",
-										Description: "Unique CloudQuery ID of k8s_networking_network_policy_ingress_from table (FK)",
-										Type:        schema.TypeUUID,
-										Resolver:    schema.ParentIdResolver,
-									},
-									{
-										Name:        "key",
-										Description: "key is the label key that the selector applies to. +patchMergeKey=key +patchStrategy=merge",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "operator",
-										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "values",
-										Description: "values is an array of string values",
-										Type:        schema.TypeStringArray,
-									},
-								},
 							},
 						},
 					},
@@ -372,10 +326,22 @@ func NetworkingNetworkPolicies() *schema.Table {
 								Resolver:    schema.PathResolver("PodSelector.MatchLabels"),
 							},
 							{
+								Name:        "pod_selector_match_expressions",
+								Description: "matchExpressions is a list of label selector requirements",
+								Type:        schema.TypeJSON,
+								Resolver:    resolveNetworkingNetworkPolicyEgressTosPodSelectorMatchExpressions,
+							},
+							{
 								Name:        "namespace_selector_match_labels",
 								Description: "matchLabels is a map of {key,value} pairs",
 								Type:        schema.TypeJSON,
 								Resolver:    schema.PathResolver("NamespaceSelector.MatchLabels"),
+							},
+							{
+								Name:        "namespace_selector_match_expressions",
+								Description: "matchExpressions is a list of label selector requirements",
+								Type:        schema.TypeJSON,
+								Resolver:    resolveNetworkingNetworkPolicyEgressTosNamespaceSelectorMatchExpressions,
 							},
 							{
 								Name:        "ip_block_c_id_r",
@@ -385,67 +351,9 @@ func NetworkingNetworkPolicies() *schema.Table {
 							},
 							{
 								Name:        "ip_block_except",
-								Description: "Except is a slice of CIDRs that should not be included within an IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\" Except values will be rejected if they are outside the CIDR range",
+								Description: "Except is a slice of CIDRs that should not be included within an IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\" Except values will be rejected if they are outside the CIDR range +optional",
 								Type:        schema.TypeStringArray,
 								Resolver:    schema.PathResolver("IPBlock.Except"),
-							},
-						},
-						Relations: []*schema.Table{
-							{
-								Name:        "k8s_networking_network_policy_egress_to_pod_selector_match_expressions",
-								Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-								Resolver:    fetchNetworkingNetworkPolicyEgressToPodSelectorMatchExpressions,
-								Columns: []schema.Column{
-									{
-										Name:        "network_policy_egress_to_cq_id",
-										Description: "Unique CloudQuery ID of k8s_networking_network_policy_egress_to table (FK)",
-										Type:        schema.TypeUUID,
-										Resolver:    schema.ParentIdResolver,
-									},
-									{
-										Name:        "key",
-										Description: "key is the label key that the selector applies to. +patchMergeKey=key +patchStrategy=merge",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "operator",
-										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "values",
-										Description: "values is an array of string values",
-										Type:        schema.TypeStringArray,
-									},
-								},
-							},
-							{
-								Name:        "k8s_networking_network_policy_egress_to_namespace_selector_match_expressions",
-								Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-								Resolver:    fetchNetworkingNetworkPolicyEgressToNamespaceSelectorMatchExpressions,
-								Columns: []schema.Column{
-									{
-										Name:        "network_policy_egress_to_cq_id",
-										Description: "Unique CloudQuery ID of k8s_networking_network_policy_egress_to table (FK)",
-										Type:        schema.TypeUUID,
-										Resolver:    schema.ParentIdResolver,
-									},
-									{
-										Name:        "key",
-										Description: "key is the label key that the selector applies to. +patchMergeKey=key +patchStrategy=merge",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "operator",
-										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "values",
-										Description: "values is an array of string values",
-										Type:        schema.TypeStringArray,
-									},
-								},
 							},
 						},
 					},
@@ -528,27 +436,33 @@ func fetchNetworkingNetworkPolicyIngressFroms(ctx context.Context, meta schema.C
 	res <- p.From
 	return nil
 }
-func fetchNetworkingNetworkPolicyIngressFromPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+func resolveNetworkingNetworkPolicyIngressFromsPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicyPeer)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", resource.Item)
 	}
 	if p.PodSelector == nil {
 		return nil
 	}
-	res <- p.PodSelector.MatchExpressions
-	return nil
+	b, err := json.Marshal(p.PodSelector.MatchExpressions)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
-func fetchNetworkingNetworkPolicyIngressFromNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+func resolveNetworkingNetworkPolicyIngressFromsNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicyPeer)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", resource.Item)
 	}
 	if p.NamespaceSelector == nil {
 		return nil
 	}
-	res <- p.NamespaceSelector.MatchExpressions
-	return nil
+	b, err := json.Marshal(p.NamespaceSelector.MatchExpressions)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchNetworkingNetworkPolicyEgresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicy)
@@ -574,25 +488,31 @@ func fetchNetworkingNetworkPolicyEgressTos(ctx context.Context, meta schema.Clie
 	res <- p.To
 	return nil
 }
-func fetchNetworkingNetworkPolicyEgressToPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+func resolveNetworkingNetworkPolicyEgressTosPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicyPeer)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", resource.Item)
 	}
 	if p.PodSelector == nil {
 		return nil
 	}
-	res <- p.PodSelector.MatchExpressions
-	return nil
+	b, err := json.Marshal(p.PodSelector.MatchExpressions)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
-func fetchNetworkingNetworkPolicyEgressToNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicyPeer)
+func resolveNetworkingNetworkPolicyEgressTosNamespaceSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicyPeer)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicyPeer instance: %T", resource.Item)
 	}
 	if p.NamespaceSelector == nil {
 		return nil
 	}
-	res <- p.NamespaceSelector.MatchExpressions
-	return nil
+	b, err := json.Marshal(p.NamespaceSelector.MatchExpressions)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
