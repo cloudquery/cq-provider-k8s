@@ -1,5 +1,5 @@
 
-# Table: k8s_batch_job_template_spec_tolerations
+# Table: k8s_batch_job_template_tolerations
 The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
 ## Columns
 | Name        | Type           | Description  |

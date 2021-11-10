@@ -1,5 +1,5 @@
 
-# Table: k8s_batch_job_template_spec_host_aliases
+# Table: k8s_batch_job_template_host_aliases
 HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file.
 ## Columns
 | Name        | Type           | Description  |

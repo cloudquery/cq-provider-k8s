@@ -1,5 +1,5 @@
 
-# Table: k8s_batch_job_template_spec_image_pull_secrets
+# Table: k8s_batch_job_template_image_pull_secrets
 LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic
 ## Columns
 | Name        | Type           | Description  |

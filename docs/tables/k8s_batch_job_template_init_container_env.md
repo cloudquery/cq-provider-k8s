@@ -1,10 +1,10 @@
 
-# Table: k8s_batch_job_template_spec_container_env
+# Table: k8s_batch_job_template_init_container_env
 EnvVar represents an environment variable present in a Container.
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
-|job_template_spec_container_cq_id|uuid|Unique CloudQuery ID of k8s_batch_job_template_spec_containers table (FK)|
+|job_template_init_container_cq_id|uuid|Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)|
 |name|text|Name of the environment variable|
 |value|text|Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables|
 |value_from_field_ref_api_version|text|Version of the schema the FieldPath is written in terms of, defaults to "v1". +optional|

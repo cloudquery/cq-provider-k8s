@@ -1,5 +1,5 @@
 
-# Table: k8s_batch_job_template_spec_containers
+# Table: k8s_batch_job_template_init_containers
 A single application container that you want to run within a pod.
 ## Columns
 | Name        | Type           | Description  |

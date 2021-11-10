@@ -1,5 +1,5 @@
 
-# Table: k8s_batch_job_template_spec_volumes
+# Table: k8s_batch_job_template_volumes
 Volume represents a named volume in a pod that may be accessed by any container in the pod.
 ## Columns
 | Name        | Type           | Description  |
