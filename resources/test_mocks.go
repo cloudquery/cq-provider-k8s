@@ -39,6 +39,17 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	return ds
 }
 
+func fakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
+	m := metav1.ManagedFieldsEntry{}
+	if err := faker.FakeData(&m); err != nil {
+		t.Fatal(err)
+	}
+	m.FieldsV1 = &metav1.FieldsV1{
+		Raw: []byte("{\"test\":1}"),
+	}
+	return m
+}
+
 func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 	var templateSpec corev1.PodTemplateSpec
 	fakeThroughPointers(t,
@@ -56,8 +67,10 @@ func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 		&templateSpec.ClusterName,
 		&templateSpec.OwnerReferences,
 		&templateSpec.ManagedFields,
+		&templateSpec.ObjectMeta,
 	)
 	templateSpec.Spec = fakePodSpec(t)
+	templateSpec.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	return templateSpec
 }
 
@@ -105,16 +118,6 @@ func fakeResourceList(t *testing.T) *corev1.ResourceList {
 	return &rl
 }
 
-func fakeManagedFields(t *testing.T) *metav1.ManagedFieldsEntry {
-	m := metav1.ManagedFieldsEntry{}
-	if err := faker.FakeData(&m); err != nil {
-		t.Fatal(err)
-	}
-	m.FieldsV1 = &metav1.FieldsV1{
-		Raw: []byte("{\"test\":1}"),
-	}
-	return &m
-}
 
 func fakeVolume(t *testing.T) corev1.Volume {
 	// faker chokes on volume.VolumeSource.Ephemeral

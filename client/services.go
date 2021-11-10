@@ -17,6 +17,7 @@ type Services struct {
 	Services     ServicesClient
 	StatefulSets StatefulSetsClient
 	Namespaces   NamespacesClient
+	ReplicaSets  ReplicaSetsClient
 	Roles        RolesClient
 	RoleBindings RoleBindingsClient
 }
@@ -44,6 +45,11 @@ type ServicesClient interface {
 //go:generate mockgen -package=mocks -destination=./mocks/stateful_sets.go . StatefulSetsClient
 type StatefulSetsClient interface {
 	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.StatefulSetList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/replica_sets.go . ReplicaSetsClient
+type ReplicaSetsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.ReplicaSetList, error)
 }
 
 //go:generate mockgen -package=mocks -destination=./mocks/roles.go . RolesClient
