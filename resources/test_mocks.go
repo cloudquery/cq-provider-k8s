@@ -72,6 +72,7 @@ func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 		&templateSpec.ObjectMeta,
 	)
 	templateSpec.Spec = fakePodSpec(t)
+	templateSpec.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	return templateSpec
 }
 
