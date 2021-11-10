@@ -19,6 +19,19 @@ func AppsDeployments() *schema.Table {
 		DeleteFilter: client.DeleteContextFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
+			client.CommonContextField,
+			{
+				Name:        "kind",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("TypeMeta.Kind"),
+			},
+			{
+				Name:        "api_version",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
+			},
 			{
 				Name:        "name",
 				Description: "Name must be unique within a namespace",
@@ -39,7 +52,7 @@ func AppsDeployments() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -93,7 +106,7 @@ func AppsDeployments() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -114,6 +127,12 @@ func AppsDeployments() *schema.Table {
 				Description: "matchLabels is a map of {key,value} pairs",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("Spec.Selector.MatchLabels"),
+			},
+			{
+				Name:        "template",
+				Description: "Template describes the pods that will be created.",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveAppsDeploymentsTemplate,
 			},
 			{
 				Name:        "strategy_type",
@@ -153,19 +172,19 @@ func AppsDeployments() *schema.Table {
 			},
 			{
 				Name:        "min_ready_seconds",
-				Description: "Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) +optional",
+				Description: "Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready)",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Spec.MinReadySeconds"),
 			},
 			{
 				Name:        "revision_history_limit",
-				Description: "The number of old ReplicaSets to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10. +optional",
+				Description: "The number of old ReplicaSets to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10.",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Spec.RevisionHistoryLimit"),
 			},
 			{
 				Name:        "paused",
-				Description: "Indicates that the deployment is paused. +optional",
+				Description: "Indicates that the deployment is paused.",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Paused"),
 			},
@@ -177,31 +196,31 @@ func AppsDeployments() *schema.Table {
 			},
 			{
 				Name:        "status_observed_generation",
-				Description: "The generation observed by the deployment controller. +optional",
+				Description: "The generation observed by the deployment controller.",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("Status.ObservedGeneration"),
 			},
 			{
 				Name:        "status_replicas",
-				Description: "Total number of non-terminated pods targeted by this deployment (their labels match the selector). +optional",
+				Description: "Total number of non-terminated pods targeted by this deployment (their labels match the selector).",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.Replicas"),
 			},
 			{
 				Name:        "status_updated_replicas",
-				Description: "Total number of non-terminated pods targeted by this deployment that have the desired template spec. +optional",
+				Description: "Total number of non-terminated pods targeted by this deployment that have the desired template spec.",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.UpdatedReplicas"),
 			},
 			{
 				Name:        "status_ready_replicas",
-				Description: "Total number of ready pods targeted by this deployment. +optional",
+				Description: "Total number of ready pods targeted by this deployment.",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.ReadyReplicas"),
 			},
 			{
 				Name:        "status_available_replicas",
-				Description: "Total number of available pods (ready for at least minReadySeconds) targeted by this deployment. +optional",
+				Description: "Total number of available pods (ready for at least minReadySeconds) targeted by this deployment.",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Status.AvailableReplicas"),
 			},
@@ -325,7 +344,17 @@ func resolveAppsDeploymentsManagedFields(ctx context.Context, meta schema.Client
 	}
 	return resource.Set(c.Name, b)
 }
-
+func resolveAppsDeploymentsTemplate(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(appsv1.Deployment)
+	if !ok {
+		return fmt.Errorf("not a appsv1.Deployment instance: %T", resource.Item)
+	}
+	b, err := json.Marshal(p.Spec.Template)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
+}
 func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
@@ -337,7 +366,6 @@ func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schem
 	res <- deployment.Spec.Selector.MatchExpressions
 	return nil
 }
-
 func fetchAppsDeploymentStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
