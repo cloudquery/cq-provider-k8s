@@ -7,15 +7,23 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 type Services struct {
+	Client       *kubernetes.Clientset
 	Nodes        NodesClient
 	Pods         PodsClient
 	Services     ServicesClient
 	StatefulSets StatefulSetsClient
+	Namespaces   NamespacesClient
 	Roles        RolesClient
 	RoleBindings RoleBindingsClient
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/namespaces.go . NamespacesClient
+type NamespacesClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error)
 }
 
 //go:generate mockgen -package=mocks -destination=./mocks/nodes.go . NodesClient
