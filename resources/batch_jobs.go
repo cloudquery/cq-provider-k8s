@@ -22,6 +22,11 @@ func BatchJobs() *schema.Table {
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
+				Name:     "owner_references",
+				Type:     schema.TypeJSON,
+				Resolver: resolveBatchJobOwnerReferences,
+			},
+			{
 				Name:        "name",
 				Description: "Name must be unique within a namespace",
 				Type:        schema.TypeString,
@@ -80,12 +85,6 @@ func BatchJobs() *schema.Table {
 				Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("ObjectMeta.Annotations"),
-			},
-			{
-				Name:        "owner_references",
-				Description: "List of objects depended by this object",
-				Type:        schema.TypeJSON,
-				Resolver:    resolveBatchJobsOwnerReferences,
 			},
 			{
 				Name:        "finalizers",
@@ -226,169 +225,169 @@ func BatchJobs() *schema.Table {
 				Resolver:    resolveBatchJobsTemplateManagedFields,
 			},
 			{
-				Name:        "template_spec_restart_policy",
+				Name:        "template_restart_policy",
 				Description: "Restart policy for all containers within the pod. One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.RestartPolicy"),
 			},
 			{
-				Name:        "template_spec_termination_grace_period_seconds",
+				Name:        "template_termination_grace_period_seconds",
 				Description: "Optional duration in seconds the pod needs to terminate gracefully",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.TerminationGracePeriodSeconds"),
 			},
 			{
-				Name:        "template_spec_active_deadline_seconds",
+				Name:        "template_active_deadline_seconds",
 				Description: "Optional duration in seconds the pod may be active on the node relative to StartTime before the system will actively try to mark it failed and kill associated containers. Value must be a positive integer. +optional",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.ActiveDeadlineSeconds"),
 			},
 			{
-				Name:        "template_spec_dns_policy",
+				Name:        "template_dns_policy",
 				Description: "Set DNS policy for the pod. Defaults to \"ClusterFirst\". Valid values are 'ClusterFirstWithHostNet', 'ClusterFirst', 'Default' or 'None'. DNS parameters given in DNSConfig will be merged with the policy selected with DNSPolicy. To have DNS options set along with hostNetwork, you have to specify DNS policy explicitly to 'ClusterFirstWithHostNet'. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.DNSPolicy"),
 			},
 			{
-				Name:        "template_spec_node_selector",
+				Name:        "template_node_selector",
 				Description: "NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ +optional +mapType=atomic",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.NodeSelector"),
 			},
 			{
-				Name:        "template_spec_service_account_name",
+				Name:        "template_service_account_name",
 				Description: "ServiceAccountName is the name of the ServiceAccount to use to run this pod. More info: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.ServiceAccountName"),
 			},
 			{
-				Name:        "template_spec_deprecated_service_account",
+				Name:        "template_deprecated_service_account",
 				Description: "DeprecatedServiceAccount is a depreciated alias for ServiceAccountName. Deprecated: Use serviceAccountName instead. +k8s:conversion-gen=false +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.DeprecatedServiceAccount"),
 			},
 			{
-				Name:        "template_spec_automount_service_account_token",
+				Name:        "template_automount_service_account_token",
 				Description: "AutomountServiceAccountToken indicates whether a service account token should be automatically mounted. +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.AutomountServiceAccountToken"),
 			},
 			{
-				Name:        "template_spec_node_name",
+				Name:        "template_node_name",
 				Description: "NodeName is a request to schedule this pod onto a specific node",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.NodeName"),
 			},
 			{
-				Name:        "template_spec_host_network",
+				Name:        "template_host_network",
 				Description: "Host networking requested for this pod",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.HostNetwork"),
 			},
 			{
-				Name:        "template_spec_host_pid",
+				Name:        "template_host_pid",
 				Description: "Use the host's pid namespace. Optional: Default to false. +k8s:conversion-gen=false +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.HostPID"),
 			},
 			{
-				Name:        "template_spec_host_ipc",
+				Name:        "template_host_ipc",
 				Description: "Use the host's ipc namespace. Optional: Default to false. +k8s:conversion-gen=false +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.HostIPC"),
 			},
 			{
-				Name:        "template_spec_share_process_namespace",
+				Name:        "template_share_process_namespace",
 				Description: "Share a single process namespace between all of the containers in a pod. When this is set containers will be able to view and signal processes from other containers in the same pod, and the first process in each container will not be assigned PID 1. HostPID and ShareProcessNamespace cannot both be set. Optional: Default to false. +k8s:conversion-gen=false +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.ShareProcessNamespace"),
 			},
 			{
-				Name:        "template_spec_security_context",
+				Name:        "template_security_context",
 				Description: "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecSecurityContext,
 			},
 			{
-				Name:        "template_spec_hostname",
+				Name:        "template_hostname",
 				Description: "Specifies the hostname of the Pod If not specified, the pod's hostname will be set to a system-defined value. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.Hostname"),
 			},
 			{
-				Name:        "template_spec_subdomain",
+				Name:        "template_subdomain",
 				Description: "If specified, the fully qualified Pod hostname will be \"<hostname>.<subdomain>.<pod namespace>.svc.<cluster domain>\". If not specified, the pod will not have a domainname at all. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.Subdomain"),
 			},
 			{
-				Name:        "template_spec_affinity",
+				Name:        "template_affinity",
 				Description: "If specified, the pod's scheduling constraints +optional",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecAffinity,
 			},
 			{
-				Name:        "template_spec_scheduler_name",
+				Name:        "template_scheduler_name",
 				Description: "If specified, the pod will be dispatched by specified scheduler. If not specified, the pod will be dispatched by default scheduler. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.SchedulerName"),
 			},
 			{
-				Name:        "template_spec_priority_class_name",
+				Name:        "template_priority_class_name",
 				Description: "If specified, indicates the pod's priority",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.PriorityClassName"),
 			},
 			{
-				Name:        "template_spec_priority",
+				Name:        "template_priority",
 				Description: "The priority value",
 				Type:        schema.TypeInt,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.Priority"),
 			},
 			{
-				Name:        "template_spec_dns_config",
+				Name:        "template_dns_config",
 				Description: "Specifies the DNS parameters of a pod. Parameters specified here will be merged to the generated DNS configuration based on DNSPolicy. +optional",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecDnsConfig,
 			},
 			{
-				Name:        "template_spec_readiness_gates",
+				Name:        "template_readiness_gates",
 				Description: "If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to \"True\" More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates +optional",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecReadinessGates,
 			},
 			{
-				Name:        "template_spec_runtime_class_name",
+				Name:        "template_runtime_class_name",
 				Description: "RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.RuntimeClassName"),
 			},
 			{
-				Name:        "template_spec_enable_service_links",
+				Name:        "template_enable_service_links",
 				Description: "EnableServiceLinks indicates whether information about services should be injected into pod's environment variables, matching the syntax of Docker links. Optional: Defaults to true. +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.EnableServiceLinks"),
 			},
 			{
-				Name:        "template_spec_preemption_policy",
+				Name:        "template_preemption_policy",
 				Description: "PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. This field is beta-level, gated by the NonPreemptingPriority feature-gate. +optional",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.PreemptionPolicy"),
 			},
 			{
-				Name:        "template_spec_overhead",
+				Name:        "template_overhead",
 				Description: "Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecOverhead,
 			},
 			{
-				Name:        "template_spec_topology_spread_constraints",
+				Name:        "template_topology_spread_constraints",
 				Description: "TopologySpreadConstraints describes how a group of pods ought to spread across topology domains",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBatchJobsTemplateSpecTopologySpreadConstraints,
 			},
 			{
-				Name:        "template_spec_set_hostname_as_fqdn",
+				Name:        "template_set_hostname_as_fqdn",
 				Description: "If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default). In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname). In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters to FQDN. If a pod does not have FQDN, this has no effect. Default to false. +optional",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("Spec.Template.Spec.SetHostnameAsFQDN"),
@@ -478,7 +477,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_volumes",
+				Name:        "k8s_batch_job_template_volumes",
 				Description: "Volume represents a named volume in a pod that may be accessed by any container in the pod.",
 				Resolver:    fetchBatchJobTemplateSpecVolumes,
 				Columns: []schema.Column{
@@ -665,7 +664,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_init_containers",
+				Name:        "k8s_batch_job_template_init_containers",
 				Description: "A single application container that you want to run within a pod.",
 				Resolver:    fetchBatchJobTemplateSpecInitContainers,
 				Columns: []schema.Column{
@@ -794,13 +793,13 @@ func BatchJobs() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_batch_job_template_spec_init_container_ports",
+						Name:        "k8s_batch_job_template_init_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchBatchJobTemplateSpecInitContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_init_containers table (FK)",
+								Name:        "job_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -833,13 +832,13 @@ func BatchJobs() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_batch_job_template_spec_init_container_env",
+						Name:        "k8s_batch_job_template_init_container_env",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchBatchJobTemplateSpecInitContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_init_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_init_containers table (FK)",
+								Name:        "job_template_init_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_init_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -923,7 +922,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_containers",
+				Name:        "k8s_batch_job_template_containers",
 				Description: "A single application container that you want to run within a pod.",
 				Resolver:    fetchBatchJobTemplateSpecContainers,
 				Columns: []schema.Column{
@@ -1052,13 +1051,13 @@ func BatchJobs() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_batch_job_template_spec_container_ports",
+						Name:        "k8s_batch_job_template_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchBatchJobTemplateSpecContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_containers table (FK)",
+								Name:        "job_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1091,13 +1090,13 @@ func BatchJobs() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_batch_job_template_spec_container_env",
+						Name:        "k8s_batch_job_template_container_env",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchBatchJobTemplateSpecContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_containers table (FK)",
+								Name:        "job_template_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1181,7 +1180,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_ephemeral_containers",
+				Name:        "k8s_batch_job_template_ephemeral_containers",
 				Description: "An EphemeralContainer is a container that may be added temporarily to an existing pod for user-initiated activities such as debugging",
 				Resolver:    fetchBatchJobTemplateSpecEphemeralContainers,
 				Columns: []schema.Column{
@@ -1325,13 +1324,13 @@ func BatchJobs() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "k8s_batch_job_template_spec_ephemeral_container_ports",
+						Name:        "k8s_batch_job_template_ephemeral_container_ports",
 						Description: "ContainerPort represents a network port in a single container.",
 						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerPorts,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_ephemeral_containers table (FK)",
+								Name:        "job_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1364,13 +1363,13 @@ func BatchJobs() *schema.Table {
 						},
 					},
 					{
-						Name:        "k8s_batch_job_template_spec_ephemeral_container_env",
+						Name:        "k8s_batch_job_template_ephemeral_container_env",
 						Description: "EnvVar represents an environment variable present in a Container.",
 						Resolver:    fetchBatchJobTemplateSpecEphemeralContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "job_template_spec_ephemeral_container_cq_id",
-								Description: "Unique CloudQuery ID of k8s_batch_job_template_spec_ephemeral_containers table (FK)",
+								Name:        "job_template_ephemeral_container_cq_id",
+								Description: "Unique CloudQuery ID of k8s_batch_job_template_ephemeral_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1454,7 +1453,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_image_pull_secrets",
+				Name:        "k8s_batch_job_template_image_pull_secrets",
 				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic",
 				Resolver:    fetchBatchJobTemplateSpecImagePullSecrets,
 				Columns: []schema.Column{
@@ -1472,7 +1471,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_tolerations",
+				Name:        "k8s_batch_job_template_tolerations",
 				Description: "The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.",
 				Resolver:    fetchBatchJobTemplateSpecTolerations,
 				Columns: []schema.Column{
@@ -1510,7 +1509,7 @@ func BatchJobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_template_spec_host_aliases",
+				Name:        "k8s_batch_job_template_host_aliases",
 				Description: "HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file.",
 				Resolver:    fetchBatchJobTemplateSpecHostAliases,
 				Columns: []schema.Column{
@@ -1575,7 +1574,7 @@ func BatchJobs() *schema.Table {
 // ====================================================================================================================
 
 func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	client := meta.(*client.Client).Services.Jobs
+	client := meta.(*client.Client).Services().Jobs
 	opts := metav1.ListOptions{}
 	for {
 		result, err := client.List(ctx, opts)
@@ -1589,7 +1588,7 @@ func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.
 		opts.Continue = result.GetContinue()
 	}
 }
-func resolveBatchJobsOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+func resolveBatchJobOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", resource.Item)

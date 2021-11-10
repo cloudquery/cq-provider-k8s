@@ -23,8 +23,8 @@ func createBatchJobs(t *testing.T, ctrl *gomock.Controller) client.Services {
 	}
 
 	j.Spec.Template = fakePodTemplateSpec(t)
-	j.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
-	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
+	j.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	jobs.EXPECT().List(gomock.Any(), metav1.ListOptions{}).Return(
 		&batchv1.JobList{Items: []batchv1.Job{j}}, nil,
 	)
