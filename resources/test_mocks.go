@@ -35,8 +35,9 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 		&ds.Spec.RevisionHistoryLimit,
 	)
 	ds.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
-
 	ds.Spec.Template = fakePodTemplateSpec(t)
+	ds.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+
 	return ds
 }
 
@@ -68,6 +69,7 @@ func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 		&templateSpec.ClusterName,
 		&templateSpec.OwnerReferences,
 		&templateSpec.ManagedFields,
+		&templateSpec.ObjectMeta,
 	)
 	templateSpec.Spec = fakePodSpec(t)
 	return templateSpec
