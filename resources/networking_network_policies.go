@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -89,6 +90,12 @@ func NetworkingNetworkPolicies() *schema.Table {
 				Resolver:    schema.PathResolver("ObjectMeta.Annotations"),
 			},
 			{
+				Name:        "owner_references",
+				Description: "List of objects depended by this object",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveNetworkingNetworkPoliciesOwnerReferences,
+			},
+			{
 				Name:        "finalizers",
 				Description: "Must be empty before the object is deleted from the registry",
 				Type:        schema.TypeStringArray,
@@ -99,6 +106,12 @@ func NetworkingNetworkPolicies() *schema.Table {
 				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
+			},
+			{
+				Name:        "managed_fields",
+				Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveNetworkingNetworkPoliciesManagedFields,
 			},
 			{
 				Name:        "pod_selector_match_labels",
@@ -114,90 +127,6 @@ func NetworkingNetworkPolicies() *schema.Table {
 			},
 		},
 		Relations: []*schema.Table{
-			{
-				Name:        "k8s_networking_network_policy_owner_references",
-				Description: "OwnerReference contains enough information to let you identify an owning object",
-				Resolver:    fetchNetworkingNetworkPolicyOwnerReferences,
-				Columns: []schema.Column{
-					{
-						Name:        "network_policy_cq_id",
-						Description: "Unique CloudQuery ID of k8s_networking_network_policies table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "api_version",
-						Description: "API version of the referent.",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "kind",
-						Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "uid",
-						Description: "UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("UID"),
-					},
-					{
-						Name:        "controller",
-						Description: "If true, this reference points to the managing controller.",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "block_owner_deletion",
-						Description: "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs \"delete\" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.",
-						Type:        schema.TypeBool,
-					},
-				},
-			},
-			{
-				Name:        "k8s_networking_network_policy_managed_fields",
-				Description: "ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.",
-				Resolver:    fetchNetworkingNetworkPolicyManagedFields,
-				Columns: []schema.Column{
-					{
-						Name:        "network_policy_cq_id",
-						Description: "Unique CloudQuery ID of k8s_networking_network_policies table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "manager",
-						Description: "Manager is an identifier of the workflow managing these fields.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "operation",
-						Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "api_version",
-						Description: "APIVersion defines the version of this resource that this field set applies to",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("APIVersion"),
-					},
-					{
-						Name:        "fields_type",
-						Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "subresource",
-						Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource",
-						Type:        schema.TypeString,
-					},
-				},
-			},
 			{
 				Name:        "k8s_networking_network_policy_pod_selector_match_expressions",
 				Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
@@ -545,21 +474,27 @@ func fetchNetworkingNetworkPolicies(ctx context.Context, meta schema.ClientMeta,
 		opts.Continue = result.GetContinue()
 	}
 }
-func fetchNetworkingNetworkPolicyOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+func resolveNetworkingNetworkPoliciesOwnerReferences(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicy)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", resource.Item)
 	}
-	res <- p.OwnerReferences
-	return nil
+	b, err := json.Marshal(p.OwnerReferences)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
-func fetchNetworkingNetworkPolicyManagedFields(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	p, ok := parent.Item.(networkingv1.NetworkPolicy)
+func resolveNetworkingNetworkPoliciesManagedFields(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(networkingv1.NetworkPolicy)
 	if !ok {
-		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
+		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", resource.Item)
 	}
-	res <- p.ManagedFields
-	return nil
+	b, err := json.Marshal(p.ManagedFields)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, b)
 }
 func fetchNetworkingNetworkPolicyPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicy)
