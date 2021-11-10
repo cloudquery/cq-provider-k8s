@@ -13,18 +13,18 @@ import (
 )
 
 type Services struct {
-	Client       *kubernetes.Clientset
-	Nodes        NodesClient
-	Pods         PodsClient
-	Services     ServicesClient
-	DaemonSets   DaemonSetsClient
-	StatefulSets StatefulSetsClient
-	Deployments DeploymentsClient
-	Namespaces   NamespacesClient
-	ReplicaSets  ReplicaSetsClient
-	Jobs         JobsClient
-	Roles        RolesClient
-	RoleBindings RoleBindingsClient
+	Client          *kubernetes.Clientset
+	Nodes           NodesClient
+	Pods            PodsClient
+	Services        ServicesClient
+	DaemonSets      DaemonSetsClient
+	StatefulSets    StatefulSetsClient
+	Deployments     DeploymentsClient
+	Namespaces      NamespacesClient
+	ReplicaSets     ReplicaSetsClient
+	Jobs            JobsClient
+	Roles           RolesClient
+	RoleBindings    RoleBindingsClient
 	NetworkPolicies NetworkPoliciesClient
 }
 

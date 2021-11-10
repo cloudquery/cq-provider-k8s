@@ -27,6 +27,7 @@ func Provider() *provider.Provider {
 			"rbac.roles":                  RbacRoles(),
 			"rbac.role_bindings":          RbacRoleBindings(),
 			"apps.daemon_sets":            AppsDaemonSets(),
+			"batch.cron_jobs":             BatchCronJobs(),
 			"networking.network_policies": NetworkingNetworkPolicies(),
 		},
 	}
