@@ -19,6 +19,7 @@ type Services struct {
 	Services     ServicesClient
 	DaemonSets   DaemonSetsClient
 	StatefulSets StatefulSetsClient
+	Deployments DeploymentsClient
 	Namespaces   NamespacesClient
 	ReplicaSets  ReplicaSetsClient
 	Jobs         JobsClient
@@ -45,6 +46,11 @@ type PodsClient interface {
 //go:generate mockgen -package=mocks -destination=./mocks/services.go . ServicesClient
 type ServicesClient interface {
 	List(ctx context.Context, opts metav1.ListOptions) (*corev1.ServiceList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/deployments.go . DeploymentsClient
+type DeploymentsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.DeploymentList, error)
 }
 
 //go:generate mockgen -package=mocks -destination=./mocks/stateful_sets.go . StatefulSetsClient
