@@ -1,14 +1,16 @@
 package resources
 
 import (
+	"testing"
+
 	"github.com/cloudquery/faker/v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
-	"testing"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
+func fakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	for i, ptr := range ptrs {
 		if err := faker.FakeData(ptr); err != nil {
 			t.Fatalf("%v %v", i, ptr)
@@ -20,7 +22,7 @@ func fakeThroughPointers(t *testing.T, ptrs []interface{}) {
 func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	var ds appsv1.DaemonSet
 	ds.Spec.Template.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&ds.TypeMeta,
 		&ds.ObjectMeta,
 		&ds.Status,
@@ -31,16 +33,26 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 		&ds.Status,
 		&ds.Spec.Selector,
 		&ds.Spec.RevisionHistoryLimit,
-	})
+	)
 
 	ds.Spec.Template = fakePodTemplateSpec(t)
 	return ds
 }
 
-//nolint
+func fakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
+	m := metav1.ManagedFieldsEntry{}
+	if err := faker.FakeData(&m); err != nil {
+		t.Fatal(err)
+	}
+	m.FieldsV1 = &metav1.FieldsV1{
+		Raw: []byte("{\"test\":1}"),
+	}
+	return m
+}
+
 func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 	var templateSpec corev1.PodTemplateSpec
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&templateSpec.Annotations,
 		&templateSpec.Name,
 		&templateSpec.GenerateName,
@@ -55,8 +67,10 @@ func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 		&templateSpec.ClusterName,
 		&templateSpec.OwnerReferences,
 		&templateSpec.ManagedFields,
-	})
+		&templateSpec.ObjectMeta,
+	)
 	templateSpec.Spec = fakePodSpec(t)
+	templateSpec.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	return templateSpec
 }
 
@@ -108,7 +122,7 @@ func fakeNode(t *testing.T) corev1.Node {
 func fakeVolume(t *testing.T) corev1.Volume {
 	// faker chokes on volume.VolumeSource.Ephemeral
 	var volume corev1.Volume
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&volume.Name,
 		&volume.VolumeSource.HostPath,
 		&volume.VolumeSource.EmptyDir,
@@ -139,14 +153,14 @@ func fakeVolume(t *testing.T) corev1.Volume {
 		&volume.VolumeSource.StorageOS,
 		&volume.VolumeSource.CSI,
 		// &volume.VolumeSource.Ephemeral,
-	})
+	)
 	volume.Ephemeral = &corev1.EphemeralVolumeSource{}
 	return volume
 }
 
 func fakeContainer(t *testing.T) corev1.Container {
 	var c corev1.Container
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&c.Name,
 		&c.Image,
 		&c.Command,
@@ -166,7 +180,7 @@ func fakeContainer(t *testing.T) corev1.Container {
 		&c.TerminationMessagePolicy,
 		&c.ImagePullPolicy,
 		&c.SecurityContext,
-	})
+	)
 	rl := make(corev1.ResourceList)
 	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
 	c.Resources.Limits = rl
@@ -180,7 +194,7 @@ func fakeContainer(t *testing.T) corev1.Container {
 
 func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 	var c corev1.EphemeralContainer
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&c.TargetContainerName,
 		&c.Name,
 		&c.Image,
@@ -201,7 +215,7 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 		&c.TerminationMessagePolicy,
 		&c.ImagePullPolicy,
 		&c.SecurityContext,
-	})
+	)
 	rl := make(corev1.ResourceList)
 	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
 	c.Resources.Limits = rl
@@ -216,11 +230,11 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 func fakePod(t *testing.T) corev1.Pod {
 	var pod corev1.Pod
 	pod.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&pod.TypeMeta,
 		&pod.ObjectMeta,
 		&pod.Status,
-	})
+	)
 	pod.Spec = fakePodSpec(t)
 
 	pod.Status.HostIP = "192.168.1.2"
@@ -232,7 +246,7 @@ func fakePod(t *testing.T) corev1.Pod {
 func fakePodSpec(t *testing.T) corev1.PodSpec {
 	var podSpec corev1.PodSpec
 	podSpec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t, []interface{}{
+	fakeThroughPointers(t,
 		&podSpec.RestartPolicy,
 		&podSpec.TerminationGracePeriodSeconds,
 		&podSpec.ActiveDeadlineSeconds,
@@ -266,7 +280,7 @@ func fakePodSpec(t *testing.T) corev1.PodSpec {
 		&podSpec.RestartPolicy,
 		&podSpec.TerminationGracePeriodSeconds,
 		&podSpec.ActiveDeadlineSeconds,
-	})
+	)
 	rl := make(corev1.ResourceList)
 	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
 	podSpec.Overhead = rl

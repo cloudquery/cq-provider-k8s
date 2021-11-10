@@ -16,9 +16,13 @@ func Provider() *provider.Provider {
 			return &client.Config{}
 		},
 		ResourceMap: map[string]*schema.Table{
+			"core.namespaces":             CoreNamespaces(),
 			"core.nodes":                  CoreNodes(),
 			"core.pods":                   CorePods(),
 			"core.services":               CoreServices(),
+			"apps.replica_sets":           AppsReplicaSets(),
+			"rbac.roles":                  RbacRoles(),
+			"rbac.role_bindings":          RbacRoleBindings(),
 			"networking.network_policies": NetworkingNetworkPolicies(),
 		},
 	}
