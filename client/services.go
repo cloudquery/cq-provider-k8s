@@ -4,6 +4,7 @@ import (
 	"context"
 
 	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,11 +13,15 @@ import (
 
 type Services struct {
 	Client       *kubernetes.Clientset
-	Nodes       NodesClient
-	Pods        PodsClient
-	Services    ServicesClient
+	Nodes        NodesClient
+	Pods         PodsClient
+	Services     ServicesClient
+	DaemonSets   DaemonSetsClient
+	StatefulSets StatefulSetsClient
 	Deployments DeploymentsClient
 	Namespaces   NamespacesClient
+	ReplicaSets  ReplicaSetsClient
+	Jobs         JobsClient
 	Roles        RolesClient
 	RoleBindings RoleBindingsClient
 }
@@ -44,6 +49,26 @@ type ServicesClient interface {
 //go:generate mockgen -package=mocks -destination=./mocks/deployments.go . DeploymentsClient
 type DeploymentsClient interface {
 	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.DeploymentList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/stateful_sets.go . StatefulSetsClient
+type StatefulSetsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.StatefulSetList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/replica_sets.go . ReplicaSetsClient
+type ReplicaSetsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.ReplicaSetList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/batch.go . JobsClient
+type JobsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*batchv1.JobList, error)
+}
+
+//go:generate mockgen -package=mocks -destination=./mocks/daemon_sets.go . DaemonSetsClient
+type DaemonSetsClient interface {
+	List(ctx context.Context, opts metav1.ListOptions) (*appsv1.DaemonSetList, error)
 }
 
 //go:generate mockgen -package=mocks -destination=./mocks/roles.go . RolesClient

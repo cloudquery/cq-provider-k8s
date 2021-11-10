@@ -18,7 +18,6 @@ func fakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	}
 }
 
-//nolint
 func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 	var ds appsv1.DaemonSet
 	ds.Spec.Template.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
@@ -34,8 +33,10 @@ func fakeDaemonSet(t *testing.T) appsv1.DaemonSet {
 		&ds.Spec.Selector,
 		&ds.Spec.RevisionHistoryLimit,
 	)
-
+	ds.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	ds.Spec.Template = fakePodTemplateSpec(t)
+	ds.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+
 	return ds
 }
 
@@ -56,13 +57,14 @@ func fakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
 		t.Fatal(err)
 	}
 	templateSpec.Spec = fakePodSpec(t)
+	templateSpec.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	return templateSpec
 }
 
 func fakeNode(t *testing.T) corev1.Node {
 	// faker chokes on Node.Status.{Capacity,Allocatable} so doing it by hand
 	var node corev1.Node
-	ptrs := []interface{}{
+	fakeThroughPointers(t,
 		&node.TypeMeta,
 		&node.ObjectMeta,
 		&node.Spec,
@@ -75,16 +77,9 @@ func fakeNode(t *testing.T) corev1.Node {
 		&node.Status.VolumesInUse,
 		&node.Status.VolumesAttached,
 		&node.Status.Config,
-	}
-	for i, ptr := range ptrs {
-		if err := faker.FakeData(ptr); err != nil {
-			t.Fatalf("%v %v", i, ptr)
-		}
-	}
-	rl := make(corev1.ResourceList)
-	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
-	node.Status.Capacity = rl
-	node.Status.Allocatable = rl
+	)
+	node.Status.Capacity = *fakeResourceList(t)
+	node.Status.Allocatable = *fakeResourceList(t)
 	node.Spec.PodCIDR = "192.168.1.0/24"
 	node.Spec.PodCIDRs = []string{"192.168.1.0/24"}
 	node.Status.Addresses = []corev1.NodeAddress{
@@ -102,6 +97,12 @@ func fakeNode(t *testing.T) corev1.Node {
 		},
 	}
 	return node
+}
+
+func fakeResourceList(t *testing.T) *corev1.ResourceList {
+	rl := make(corev1.ResourceList)
+	rl[corev1.ResourceName(faker.UUIDHyphenated())] = *apiresource.NewQuantity(faker.UnixTime(), apiresource.BinarySI)
+	return &rl
 }
 
 func fakeVolume(t *testing.T) corev1.Volume {
@@ -166,10 +167,9 @@ func fakeContainer(t *testing.T) corev1.Container {
 		&c.ImagePullPolicy,
 		&c.SecurityContext,
 	)
-	rl := make(corev1.ResourceList)
-	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
-	c.Resources.Limits = rl
-	c.Resources.Requests = rl
+
+	c.Resources.Limits = *fakeResourceList(t)
+	c.Resources.Requests = *fakeResourceList(t)
 	c.LivenessProbe = &corev1.Probe{}
 	c.ReadinessProbe = &corev1.Probe{}
 	c.StartupProbe = &corev1.Probe{}
@@ -201,10 +201,9 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 		&c.ImagePullPolicy,
 		&c.SecurityContext,
 	)
-	rl := make(corev1.ResourceList)
-	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
-	c.Resources.Limits = rl
-	c.Resources.Requests = rl
+
+	c.Resources.Limits = *fakeResourceList(t)
+	c.Resources.Requests = *fakeResourceList(t)
 	c.LivenessProbe = &corev1.Probe{}
 	c.ReadinessProbe = &corev1.Probe{}
 	c.StartupProbe = &corev1.Probe{}
@@ -241,9 +240,7 @@ func fakePodSpec(t *testing.T) corev1.PodSpec {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	rl := make(corev1.ResourceList)
-	rl["name"] = *apiresource.NewQuantity(1024*1024, apiresource.BinarySI)
-	podSpec.Overhead = rl
+	podSpec.Overhead = *fakeResourceList(t)
 	podSpec.InitContainers = []corev1.Container{fakeContainer(t)}
 	podSpec.Containers = []corev1.Container{fakeContainer(t)}
 	podSpec.EphemeralContainers = []corev1.EphemeralContainer{fakeEphemeralContainer(t)}
@@ -251,4 +248,42 @@ func fakePodSpec(t *testing.T) corev1.PodSpec {
 	podSpec.RestartPolicy = "test"
 
 	return podSpec
+}
+
+func fakeSelector(_ *testing.T) *metav1.LabelSelector {
+	return &metav1.LabelSelector{
+		MatchExpressions: []metav1.LabelSelectorRequirement{
+			{
+				Key:      "test",
+				Operator: "test",
+				Values: []string{
+					"test1", "test2",
+				},
+			},
+		},
+		MatchLabels: map[string]string{
+			"test": "test",
+		},
+	}
+}
+
+func fakePersistentVolumeClaim(t *testing.T) *corev1.PersistentVolumeClaim {
+	claim := corev1.PersistentVolumeClaim{}
+	if err := faker.FakeDataSkipFields(&claim, []string{"Spec", "Status"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := faker.FakeDataSkipFields(&claim.Status, []string{"Capacity", "Phase"}); err != nil {
+		t.Fatal(err)
+	}
+
+	claim.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+	claim.Status.Phase = "test"
+	claim.Status.Capacity = *fakeResourceList(t)
+	if err := faker.FakeDataSkipFields(&claim.Spec, []string{"Resources"}); err != nil {
+		t.Fatal(err)
+	}
+	claim.Spec.Resources.Requests = *fakeResourceList(t)
+	claim.Spec.Resources.Limits = *fakeResourceList(t)
+
+	return &claim
 }
