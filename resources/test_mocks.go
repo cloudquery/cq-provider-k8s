@@ -118,7 +118,6 @@ func fakeResourceList(t *testing.T) *corev1.ResourceList {
 	return &rl
 }
 
-
 func fakeVolume(t *testing.T) corev1.Volume {
 	// faker chokes on volume.VolumeSource.Ephemeral
 	var volume corev1.Volume
@@ -313,6 +312,8 @@ func fakePersistentVolumeClaim(t *testing.T) *corev1.PersistentVolumeClaim {
 	if err := faker.FakeDataSkipFields(&claim.Status, []string{"Capacity", "Phase"}); err != nil {
 		t.Fatal(err)
 	}
+
+	claim.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	claim.Status.Phase = "test"
 	claim.Status.Capacity = *fakeResourceList(t)
 	if err := faker.FakeDataSkipFields(&claim.Spec, []string{"Resources"}); err != nil {

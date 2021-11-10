@@ -1,7 +1,6 @@
 package resources
 
 import (
-	v1 "k8s.io/api/core/v1"
 	"testing"
 
 	"github.com/cloudquery/cq-provider-k8s/client"
@@ -9,6 +8,7 @@ import (
 	"github.com/cloudquery/faker/v3"
 	"github.com/golang/mock/gomock"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -32,10 +32,10 @@ func fakeStatefulSet(t *testing.T) appsv1.StatefulSet {
 		t.Fatal(err)
 	}
 	rs.Spec.PodManagementPolicy = "test"
-	rs.Spec.VolumeClaimTemplates = []v1.PersistentVolumeClaim{*fakePersistentVolumeClaim(t)}
+	rs.Spec.VolumeClaimTemplates = []corev1.PersistentVolumeClaim{*fakePersistentVolumeClaim(t)}
 	rs.Spec.Selector = fakeSelector(t)
 	rs.Spec.Template = fakePodTemplateSpec(t)
-	rs.ManagedFields = []metav1.ManagedFieldsEntry{*fakeManagedFields(t)}
+	rs.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
 	return rs
 }
 
