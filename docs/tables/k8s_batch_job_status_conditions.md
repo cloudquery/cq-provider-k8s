@@ -7,5 +7,5 @@ JobCondition describes current state of a job.
 |job_cq_id|uuid|Unique CloudQuery ID of k8s_batch_jobs table (FK)|
 |type|text|Type of job condition, Complete or Failed.|
 |status|text|Status of the condition, one of True, False, Unknown.|
-|reason|text|(brief) reason for the condition's last transition. +optional|
-|message|text|Human readable message indicating details about last transition. +optional|
+|reason|text|(brief) reason for the condition's last transition.|
+|message|text|Human readable message indicating details about last transition.|
