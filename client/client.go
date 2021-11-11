@@ -134,6 +134,7 @@ func initServices(client *kubernetes.Clientset) Services {
 		ReplicaSets:     client.AppsV1().ReplicaSets(""),
 		Roles:           client.RbacV1().Roles(""),
 		RoleBindings:    client.RbacV1().RoleBindings(""),
+		Deployments:     client.AppsV1().Deployments(""),
 		NetworkPolicies: client.NetworkingV1().NetworkPolicies(""),
 		CronJobs:        client.BatchV1().CronJobs(""),
 	}

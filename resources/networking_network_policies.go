@@ -12,10 +12,12 @@ import (
 
 func NetworkingNetworkPolicies() *schema.Table {
 	return &schema.Table{
-		Name:        "k8s_networking_network_policies",
-		Description: "NetworkPolicy describes what network traffic is allowed for a set of Pods",
-		Resolver:    fetchNetworkingNetworkPolicies,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
+		Name:         "k8s_networking_network_policies",
+		Description:  "NetworkPolicy describes what network traffic is allowed for a set of Pods",
+		Resolver:     fetchNetworkingNetworkPolicies,
+		Multiplex:    client.ContextMultiplex,
+		DeleteFilter: client.DeleteContextFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			{
 				Name:        "kind",
