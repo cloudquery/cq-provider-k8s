@@ -90,7 +90,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		kConfig:  kCfg,
 		config:   cfg,
 		contexts: contexts,
-		Context:  "",
+		Context:  contexts[0],
 	}
 
 	for _, ctxName := range contexts {
