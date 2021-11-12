@@ -28,6 +28,9 @@ jobs:
           minikube version: 'v1.24.0'
           kubernetes version: 'v1.22.2'
 
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
@@ -42,9 +45,6 @@ jobs:
           echo "::set-output name=port::${url#*:}"
           kubepath=$(realpath ${{env.KUBECONFIG_PATH}})
           echo "::set-output name=kubepath::${kubepath}"
-
-      - name: Setup terraform
-        uses: hashicorp/setup-terraform@v1
 
       - name: Apply terraform resources
         env:

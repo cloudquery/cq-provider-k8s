@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestIntegrationApigatewayAPIKeys(t *testing.T) {
+func TestIntegrationBatchCronJobs(t *testing.T) {
 	k8sTestIntegrationHelper(t, resources.BatchCronJobs(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
 			Name: "k8s_batch_cron_jobs",
