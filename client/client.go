@@ -123,7 +123,7 @@ func buildKubeClient(kubeConfig api.Config, ctx string) (*kubernetes.Clientset, 
 
 func initServices(client *kubernetes.Clientset) Services {
 	return Services{
-		CronJobs: client.BatchV1().CronJobs(""),
+		CronJobs:     client.BatchV1().CronJobs(""),
 		Client:       client,
 		Namespaces:   client.CoreV1().Namespaces(),
 		Nodes:        client.CoreV1().Nodes(),
@@ -131,6 +131,7 @@ func initServices(client *kubernetes.Clientset) Services {
 		Services:     client.CoreV1().Services(""),
 		Jobs:         client.BatchV1().Jobs(""),
 		DaemonSets:   client.AppsV1().DaemonSets(""),
+		Deployments:  client.AppsV1().Deployments(""),
 		StatefulSets: client.AppsV1().StatefulSets(""),
 		ReplicaSets:  client.AppsV1().ReplicaSets(""),
 		Roles:        client.RbacV1().Roles(""),
