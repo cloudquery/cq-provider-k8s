@@ -169,6 +169,12 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
+					{
+						Name:        "network_policy_uid",
+						Description: "The name of the Availability Zone..",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentResourceFieldResolver("uid"),
+					},
 				},
 				Relations: []*schema.Table{
 					{
@@ -270,6 +276,12 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Description: "Unique CloudQuery ID of k8s_networking_network_policies table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "network_policy_uid",
+						Description: "The name of the Availability Zone..",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentResourceFieldResolver("uid"),
 					},
 				},
 				Relations: []*schema.Table{
