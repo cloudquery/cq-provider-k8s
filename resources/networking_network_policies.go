@@ -170,10 +170,9 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:        "network_policy_uid",
-						Description: "The name of the Availability Zone..",
-						Type:        schema.TypeString,
-						Resolver:    schema.ParentResourceFieldResolver("uid"),
+						Name:     "network_policy_uid",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("uid"),
 					},
 				},
 				Relations: []*schema.Table{
@@ -251,7 +250,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 								Resolver:    resolveNetworkingNetworkPolicyIngressFromsNamespaceSelectorMatchExpressions,
 							},
 							{
-								Name:        "ip_block_c_id_r",
+								Name:        "ip_block_cidr",
 								Description: "CIDR is a string representing the IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\"",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("IPBlock.CIDR"),
@@ -278,10 +277,9 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:        "network_policy_uid",
-						Description: "The name of the Availability Zone..",
-						Type:        schema.TypeString,
-						Resolver:    schema.ParentResourceFieldResolver("uid"),
+						Name:     "network_policy_uid",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("uid"),
 					},
 				},
 				Relations: []*schema.Table{
@@ -359,7 +357,7 @@ func NetworkingNetworkPolicies() *schema.Table {
 								Resolver:    resolveNetworkingNetworkPolicyEgressTosNamespaceSelectorMatchExpressions,
 							},
 							{
-								Name:        "ip_block_c_id_r",
+								Name:        "ip_block_cidr",
 								Description: "CIDR is a string representing the IP Block Valid examples are \"192.168.1.1/24\" or \"2001:db9::/64\"",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("IPBlock.CIDR"),
