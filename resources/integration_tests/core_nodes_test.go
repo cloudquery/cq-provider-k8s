@@ -8,17 +8,16 @@ import (
 )
 
 func TestIntegrationCoreNodes(t *testing.T) {
-	k8sTestIntegrationHelper(t, resources.CoreNodes(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
+	schema := resources.CoreNodes()
+	k8sTestIntegrationHelper(t, schema, []string{}, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
-			Name: "k8s_core_nodes",
+			Name: schema.Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where("name = 'minikube'")
+				return sq
 			},
 			ExpectedValues: []providertest.ExpectedValue{{
 				Count: 1,
-				Data: map[string]interface{}{
-					"name": "minikube",
-				}},
+				Data:  map[string]interface{}{}},
 			},
 		}
 	})
