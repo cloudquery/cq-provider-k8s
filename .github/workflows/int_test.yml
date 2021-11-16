@@ -77,12 +77,12 @@ jobs:
         run: |
           terraform destroy  -auto-approve -var test_prefix=${{env.TF_VAR_PREFIX}} -var test_suffix=${{env.TF_VAR_SUFFIX}}
 
-#      - name: Slack Notification
-#        uses: rtCamp/action-slack-notify@v2
-#        if: ${{ failure() }}
-#        env:
-#          SLACK_CHANNEL: oss-tests
-#          SLACK_COLOR: ${{ job.status }}
-#          SLACK_MESSAGE: 'AWS - E2E tests failed'
-#          SLACK_TITLE: AWS - E2E tests failed
-#          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ failure() }}
+        env:
+          SLACK_CHANNEL: oss-tests
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 'K8S - E2E tests failed'
+          SLACK_TITLE: K8S - E2E tests failed
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
