@@ -1,6 +1,6 @@
 
-# Table: k8s_rbac_roles
-Role is a namespaced, logical grouping of PolicyRules that can be referenced as a unit by a RoleBinding.
+# Table: k8s_networking_network_policies
+NetworkPolicy describes what network traffic is allowed for a set of Pods
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
@@ -21,3 +21,5 @@ Role is a namespaced, logical grouping of PolicyRules that can be referenced as 
 |finalizers|text[]|Must be empty before the object is deleted from the registry|
 |cluster_name|text|The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional|
 |managed_fields|jsonb|ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow|
+|pod_selector_match_labels|jsonb|matchLabels is a map of {key,value} pairs|
+|policy_types|text[]|List of rule types that the NetworkPolicy relates to. Valid options are ["Ingress"], ["Egress"], or ["Ingress", "Egress"]. If this field is not specified, it will default based on the existence of Ingress or Egress rules; policies that contain an Egress section are assumed to affect Egress, and all policies (whether or not they contain an Ingress section) are assumed to affect Ingress. If you want to write an egress-only policy, you must explicitly specify policyTypes [ "Egress" ]. Likewise, if you want to write a policy that specifies that no egress is allowed, you must specify a policyTypes value that include "Egress" (since such a policy would not include an Egress section and would otherwise default to just [ "Ingress" ]). This field is beta-level in 1.8 +optional|
