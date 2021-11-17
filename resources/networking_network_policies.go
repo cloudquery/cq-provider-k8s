@@ -170,9 +170,10 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:     "network_policy_uid",
-						Type:     schema.TypeString,
-						Resolver: schema.ParentResourceFieldResolver("uid"),
+						Name:        "network_policy_uid",
+						Description: "Unique internal ID of Network Policy resource",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentResourceFieldResolver("uid"),
 					},
 				},
 				Relations: []*schema.Table{
@@ -277,9 +278,10 @@ func NetworkingNetworkPolicies() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:     "network_policy_uid",
-						Type:     schema.TypeString,
-						Resolver: schema.ParentResourceFieldResolver("uid"),
+						Name:        "network_policy_uid",
+						Description: "Unique internal ID of Network Policy resource",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentResourceFieldResolver("uid"),
 					},
 				},
 				Relations: []*schema.Table{
