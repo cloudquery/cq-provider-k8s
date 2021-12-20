@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 
 	"github.com/cloudquery/cq-provider-k8s/client"
 	corev1 "k8s.io/api/core/v1"
@@ -148,7 +149,7 @@ func CoreEndpoints() *schema.Table {
 								Name:        "ip",
 								Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms",
 								Type:        schema.TypeInet,
-								Resolver:    schema.PathResolver("IP"),
+								Resolver:    resolveCoreEndpointSubsetAddressesIP,
 							},
 							{
 								Name:        "hostname",
@@ -219,7 +220,7 @@ func CoreEndpoints() *schema.Table {
 								Name:        "ip",
 								Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms",
 								Type:        schema.TypeInet,
-								Resolver:    schema.PathResolver("IP"),
+								Resolver:    resolveCoreEndpointSubsetNotReadyAddressesIP,
 							},
 							{
 								Name:        "hostname",
@@ -356,6 +357,34 @@ func resolveCoreEndpointsManagedFields(_ context.Context, _ schema.ClientMeta, r
 		return err
 	}
 	return resource.Set(c.Name, b)
+}
+
+func resolveCoreEndpointSubsetAddressesIP(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	endpointAddress, ok := resource.Item.(corev1.EndpointAddress)
+	if !ok {
+		return fmt.Errorf("not a corev1.EndpointAddress instance: %T", resource.Item)
+	}
+	ip := net.ParseIP(endpointAddress.IP)
+	if ip != nil {
+		if v4 := ip.To4(); v4 != nil {
+			ip = v4
+		}
+	}
+	return resource.Set(c.Name, ip)
+}
+
+func resolveCoreEndpointSubsetNotReadyAddressesIP(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	endpointAddress, ok := resource.Item.(corev1.EndpointAddress)
+	if !ok {
+		return fmt.Errorf("not a corev1.EndpointAddress instance: %T", resource.Item)
+	}
+	ip := net.ParseIP(endpointAddress.IP)
+	if ip != nil {
+		if v4 := ip.To4(); v4 != nil {
+			ip = v4
+		}
+	}
+	return resource.Set(c.Name, ip)
 }
 
 func fetchCoreEndpointSubsets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
