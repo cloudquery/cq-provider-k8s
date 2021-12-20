@@ -19,17 +19,18 @@ func CoreResourceQuotas() *schema.Table {
 		Resolver:     fetchCoreResourceQuotas,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
 				Name:        "kind",
-				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
 				Name:        "api_version",
-				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources +optional",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -53,7 +54,7 @@ func CoreResourceQuotas() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -107,7 +108,7 @@ func CoreResourceQuotas() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -119,25 +120,25 @@ func CoreResourceQuotas() *schema.Table {
 			},
 			{
 				Name:        "hard",
-				Description: "hard is the set of desired hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/ +optional",
+				Description: "hard is the set of desired hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("Spec.Hard"),
 			},
 			{
 				Name:        "scopes",
-				Description: "A collection of filters that must match each object tracked by a quota. If not specified, the quota matches all objects. +optional",
+				Description: "A collection of filters that must match each object tracked by a quota. If not specified, the quota matches all objects.",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("Spec.Scopes"),
 			},
 			{
 				Name:        "status_hard",
-				Description: "Hard is the set of enforced hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/ +optional",
+				Description: "Hard is the set of enforced hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("Status.Hard"),
 			},
 			{
 				Name:        "status_used",
-				Description: "Used is the current observed total usage of the resource in the namespace. +optional",
+				Description: "Used is the current observed total usage of the resource in the namespace.",
 				Type:        schema.TypeJSON,
 				Resolver:    schema.PathResolver("Status.Used"),
 			},

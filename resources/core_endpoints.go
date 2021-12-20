@@ -19,17 +19,18 @@ func CoreEndpoints() *schema.Table {
 		Resolver:     fetchCoreEndpoints,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
 				Name:        "kind",
-				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
 				Name:        "api_version",
-				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources +optional",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -53,7 +54,7 @@ func CoreEndpoints() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -107,7 +108,7 @@ func CoreEndpoints() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -134,7 +135,7 @@ func CoreEndpoints() *schema.Table {
 				Relations: []*schema.Table{
 					{
 						Name:        "k8s_core_endpoint_subset_addresses",
-						Description: "EndpointAddress is a tuple that describes single IP address. +structType=atomic",
+						Description: "EndpointAddress is a tuple that describes single IP address.",
 						Resolver:    fetchCoreEndpointSubsetAddresses,
 						Columns: []schema.Column{
 							{
@@ -146,12 +147,12 @@ func CoreEndpoints() *schema.Table {
 							{
 								Name:        "ip",
 								Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms",
-								Type:        schema.TypeString,
+								Type:        schema.TypeInet,
 								Resolver:    schema.PathResolver("IP"),
 							},
 							{
 								Name:        "hostname",
-								Description: "The Hostname of this endpoint +optional",
+								Description: "The Hostname of this endpoint",
 								Type:        schema.TypeString,
 							},
 							{
@@ -161,37 +162,37 @@ func CoreEndpoints() *schema.Table {
 							},
 							{
 								Name:        "target_ref_kind",
-								Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+								Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Kind"),
 							},
 							{
 								Name:        "target_ref_namespace",
-								Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ +optional",
+								Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Namespace"),
 							},
 							{
 								Name:        "target_ref_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names +optional",
+								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Name"),
 							},
 							{
 								Name:        "target_ref_uid",
-								Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids +optional",
+								Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.UID"),
 							},
 							{
 								Name:        "target_ref_api_version",
-								Description: "API version of the referent. +optional",
+								Description: "API version of the referent.",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.APIVersion"),
 							},
 							{
 								Name:        "target_ref_resource_version",
-								Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency +optional",
+								Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.ResourceVersion"),
 							},
@@ -205,7 +206,7 @@ func CoreEndpoints() *schema.Table {
 					},
 					{
 						Name:        "k8s_core_endpoint_subset_not_ready_addresses",
-						Description: "EndpointAddress is a tuple that describes single IP address. +structType=atomic",
+						Description: "EndpointAddress is a tuple that describes single IP address.",
 						Resolver:    fetchCoreEndpointSubsetNotReadyAddresses,
 						Columns: []schema.Column{
 							{
@@ -217,12 +218,12 @@ func CoreEndpoints() *schema.Table {
 							{
 								Name:        "ip",
 								Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms",
-								Type:        schema.TypeString,
+								Type:        schema.TypeInet,
 								Resolver:    schema.PathResolver("IP"),
 							},
 							{
 								Name:        "hostname",
-								Description: "The Hostname of this endpoint +optional",
+								Description: "The Hostname of this endpoint",
 								Type:        schema.TypeString,
 							},
 							{
@@ -232,37 +233,37 @@ func CoreEndpoints() *schema.Table {
 							},
 							{
 								Name:        "target_ref_kind",
-								Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+								Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Kind"),
 							},
 							{
 								Name:        "target_ref_namespace",
-								Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ +optional",
+								Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Namespace"),
 							},
 							{
 								Name:        "target_ref_name",
-								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names +optional",
+								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.Name"),
 							},
 							{
 								Name:        "target_ref_uid",
-								Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids +optional",
+								Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.UID"),
 							},
 							{
 								Name:        "target_ref_api_version",
-								Description: "API version of the referent. +optional",
+								Description: "API version of the referent.",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.APIVersion"),
 							},
 							{
 								Name:        "target_ref_resource_version",
-								Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency +optional",
+								Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
 								Type:        schema.TypeString,
 								Resolver:    schema.PathResolver("TargetRef.ResourceVersion"),
 							},
@@ -276,7 +277,7 @@ func CoreEndpoints() *schema.Table {
 					},
 					{
 						Name:        "k8s_core_endpoint_subset_ports",
-						Description: "EndpointPort is a tuple that describes a single port. +structType=atomic",
+						Description: "EndpointPort is a tuple that describes a single port.",
 						Resolver:    fetchCoreEndpointSubsetPorts,
 						Columns: []schema.Column{
 							{
@@ -297,12 +298,12 @@ func CoreEndpoints() *schema.Table {
 							},
 							{
 								Name:        "protocol",
-								Description: "The IP protocol for this port. Must be UDP, TCP, or SCTP. Default is TCP. +optional",
+								Description: "The IP protocol for this port. Must be UDP, TCP, or SCTP. Default is TCP.",
 								Type:        schema.TypeString,
 							},
 							{
 								Name:        "app_protocol",
-								Description: "The application protocol for this port. This field follows standard Kubernetes label syntax. Un-prefixed names are reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names). Non-standard protocols should use prefixed names such as mycompany.com/my-custom-protocol. +optional",
+								Description: "The application protocol for this port. This field follows standard Kubernetes label syntax. Un-prefixed names are reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names). Non-standard protocols should use prefixed names such as mycompany.com/my-custom-protocol.",
 								Type:        schema.TypeString,
 							},
 						},

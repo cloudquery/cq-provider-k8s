@@ -19,17 +19,18 @@ func CoreServiceAccounts() *schema.Table {
 		Resolver:     fetchCoreServiceAccounts,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
 				Name:        "kind",
-				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
 				Name:        "api_version",
-				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources +optional",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -53,7 +54,7 @@ func CoreServiceAccounts() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -107,7 +108,7 @@ func CoreServiceAccounts() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -119,7 +120,7 @@ func CoreServiceAccounts() *schema.Table {
 			},
 			{
 				Name:        "automount_service_account_token",
-				Description: "AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. Can be overridden at the pod level. +optional",
+				Description: "AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. Can be overridden at the pod level.",
 				Type:        schema.TypeBool,
 			},
 		},
@@ -137,34 +138,34 @@ func CoreServiceAccounts() *schema.Table {
 					},
 					{
 						Name:        "kind",
-						Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+						Description: "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "namespace",
-						Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ +optional",
+						Description: "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "name",
-						Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names +optional",
+						Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "uid",
-						Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids +optional",
+						Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("UID"),
 					},
 					{
 						Name:        "api_version",
-						Description: "API version of the referent. +optional",
+						Description: "API version of the referent.",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("APIVersion"),
 					},
 					{
 						Name:        "resource_version",
-						Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency +optional",
+						Description: "Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
 						Type:        schema.TypeString,
 					},
 					{
@@ -176,7 +177,7 @@ func CoreServiceAccounts() *schema.Table {
 			},
 			{
 				Name:        "k8s_core_service_account_image_pull_secrets",
-				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. +structType=atomic",
+				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.",
 				Resolver:    fetchCoreServiceAccountImagePullSecrets,
 				Columns: []schema.Column{
 					{

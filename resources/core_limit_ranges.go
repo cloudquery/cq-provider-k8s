@@ -19,17 +19,18 @@ func CoreLimitRanges() *schema.Table {
 		Resolver:     fetchCoreLimitRanges,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
 				Name:        "kind",
-				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds +optional",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.Kind"),
 			},
 			{
 				Name:        "api_version",
-				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources +optional",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TypeMeta.APIVersion"),
 			},
@@ -53,7 +54,7 @@ func CoreLimitRanges() *schema.Table {
 			},
 			{
 				Name:        "self_link",
-				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release. +optional",
+				Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.  DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.SelfLink"),
 			},
@@ -107,7 +108,7 @@ func CoreLimitRanges() *schema.Table {
 			},
 			{
 				Name:        "cluster_name",
-				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request. +optional",
+				Description: "The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ObjectMeta.ClusterName"),
 			},
@@ -137,27 +138,27 @@ func CoreLimitRanges() *schema.Table {
 					},
 					{
 						Name:        "max",
-						Description: "Max usage constraints on this kind by resource name. +optional",
+						Description: "Max usage constraints on this kind by resource name.",
 						Type:        schema.TypeJSON,
 					},
 					{
 						Name:        "min",
-						Description: "Min usage constraints on this kind by resource name. +optional",
+						Description: "Min usage constraints on this kind by resource name.",
 						Type:        schema.TypeJSON,
 					},
 					{
 						Name:        "default",
-						Description: "Default resource requirement limit value by resource name if resource limit is omitted. +optional",
+						Description: "Default resource requirement limit value by resource name if resource limit is omitted.",
 						Type:        schema.TypeJSON,
 					},
 					{
 						Name:        "default_request",
-						Description: "DefaultRequest is the default resource requirement request value by resource name if resource request is omitted. +optional",
+						Description: "DefaultRequest is the default resource requirement request value by resource name if resource request is omitted.",
 						Type:        schema.TypeJSON,
 					},
 					{
 						Name:        "max_limit_request_ratio",
-						Description: "MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource. +optional",
+						Description: "MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource.",
 						Type:        schema.TypeJSON,
 					},
 				},
