@@ -123,6 +123,12 @@ func CoreServiceAccounts() *schema.Table {
 				Description: "AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. Can be overridden at the pod level.",
 				Type:        schema.TypeBool,
 			},
+			{
+				Name:        "pull_secret_names",
+				Description: "Name of the pull secrets. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+				Type:        schema.TypeStringArray,
+				Resolver:    resolveCoreServiceAccountsImagePullSecretNames,
+			},
 		},
 		Relations: []*schema.Table{
 			{
@@ -175,24 +181,6 @@ func CoreServiceAccounts() *schema.Table {
 					},
 				},
 			},
-			{
-				Name:        "k8s_core_service_account_image_pull_secrets",
-				Description: "LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.",
-				Resolver:    fetchCoreServiceAccountImagePullSecrets,
-				Columns: []schema.Column{
-					{
-						Name:        "service_account_cq_id",
-						Description: "Unique CloudQuery ID of k8s_core_service_accounts table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "name",
-						Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields",
-						Type:        schema.TypeString,
-					},
-				},
-			},
 		},
 	}
 }
@@ -241,20 +229,23 @@ func resolveCoreServiceAccountsManagedFields(_ context.Context, _ schema.ClientM
 	return resource.Set(c.Name, b)
 }
 
+func resolveCoreServiceAccountsImagePullSecretNames(_ context.Context, _ schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(corev1.ServiceAccount)
+	if !ok {
+		return fmt.Errorf("not a corev1.ServiceAccount instance: %T", resource.Item)
+	}
+	imagePullSecrets := make([]string, len(p.ImagePullSecrets))
+	for i, imagePullSecret := range p.ImagePullSecrets {
+		imagePullSecrets[i] = imagePullSecret.Name
+	}
+	return resource.Set(c.Name, imagePullSecrets)
+}
+
 func fetchCoreServiceAccountSecrets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	serviceAccount, ok := parent.Item.(corev1.ServiceAccount)
 	if !ok {
 		return fmt.Errorf("not a corev1.ServiceAccount instance: %T", parent.Item)
 	}
 	res <- serviceAccount.Secrets
-	return nil
-}
-
-func fetchCoreServiceAccountImagePullSecrets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	serviceAccount, ok := parent.Item.(corev1.ServiceAccount)
-	if !ok {
-		return fmt.Errorf("not a corev1.ServiceAccount instance: %T", parent.Item)
-	}
-	res <- serviceAccount.ImagePullSecrets
 	return nil
 }
