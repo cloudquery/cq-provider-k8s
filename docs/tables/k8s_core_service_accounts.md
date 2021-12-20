@@ -22,3 +22,4 @@ ServiceAccount binds together: * a name, understood by users, and perhaps by per
 |cluster_name|text|The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.|
 |managed_fields|jsonb|ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow|
 |automount_service_account_token|boolean|AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. Can be overridden at the pod level.|
+|pull_secret_names|text[]|Name of the pull secrets. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names|
