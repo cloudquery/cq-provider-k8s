@@ -132,6 +132,18 @@ func CoreEndpoints() *schema.Table {
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
+					{
+						Name:        "endpoint_name",
+						Description: "Name must be unique within a namespace",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentPathResolver("ObjectMeta.Name"),
+					},
+					{
+						Name:        "endpoint_uid",
+						Description: "UID is the unique in time and space value for this object",
+						Type:        schema.TypeString,
+						Resolver:    schema.ParentPathResolver("ObjectMeta.UID"),
+					},
 				},
 				Relations: []*schema.Table{
 					{
