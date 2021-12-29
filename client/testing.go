@@ -12,12 +12,10 @@ import (
 )
 
 func K8sTestHelper(t *testing.T, table *schema.Table, snapshotDirPath string) {
-	cfg := `
-	aws_debug = false
-	`
+	cfg := ``
 	providertest.TestResource(t, providertest.ResourceTestCase{
 		Provider: &provider.Provider{
-			Name:      "aws_mock_test_provider",
+			Name:      "k8s_mock_test_provider",
 			Version:   "development",
 			Configure: Configure,
 			Config: func() provider.Config {
@@ -29,7 +27,7 @@ func K8sTestHelper(t *testing.T, table *schema.Table, snapshotDirPath string) {
 		},
 		Table:         table,
 		Config:        cfg,
-		SkipEmptyRows: true,
+		SkipEmptyRows: false,
 	})
 }
 
