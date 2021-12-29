@@ -226,9 +226,10 @@ func DaemonSets() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "k8s_apps_daemon_set_selector_match_expressions",
-				Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-				Resolver:    fetchDaemonSetSelectorMatchExpressions,
+				IgnoreInTests: true,
+				Name:          "k8s_apps_daemon_set_selector_match_expressions",
+				Description:   "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+				Resolver:      fetchDaemonSetSelectorMatchExpressions,
 				Columns: []schema.Column{
 					{
 						Name:        "daemon_set_cq_id",
