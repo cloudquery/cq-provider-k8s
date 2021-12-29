@@ -255,9 +255,10 @@ func DaemonSets() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_apps_daemon_set_status_conditions",
-				Description: "DaemonSetCondition describes the state of a DaemonSet at a certain point.",
-				Resolver:    fetchDaemonSetStatusConditions,
+				IgnoreInTests: true,
+				Name:          "k8s_apps_daemon_set_status_conditions",
+				Description:   "DaemonSetCondition describes the state of a DaemonSet at a certain point.",
+				Resolver:      fetchDaemonSetStatusConditions,
 				Columns: []schema.Column{
 					{
 						Name:        "daemon_set_cq_id",
