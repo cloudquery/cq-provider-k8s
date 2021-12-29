@@ -1,3 +1,6 @@
+//go:build mock
+// +build mock
+
 package rbac
 
 import (
@@ -5,6 +8,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-k8s/client/mocks"
+	"github.com/cloudquery/cq-provider-k8s/resources/services/testData"
 	"github.com/cloudquery/faker/v3"
 	"github.com/golang/mock/gomock"
 	v1 "k8s.io/api/rbac/v1"
@@ -26,7 +30,7 @@ func fakeRole(t *testing.T) *v1.Role {
 	if err := faker.FakeData(&r); err != nil {
 		t.Fatal(err)
 	}
-	r.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+	r.ManagedFields = []metav1.ManagedFieldsEntry{testData.FakeManagedFields(t)}
 	return &r
 }
 

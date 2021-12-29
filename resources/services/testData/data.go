@@ -1,15 +1,16 @@
-package core
+package testData
 
 import (
 	"testing"
 
 	"github.com/cloudquery/faker/v3"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func fakeThroughPointers(t *testing.T, ptrs ...interface{}) {
+func FakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	for i, ptr := range ptrs {
 		if err := faker.FakeData(ptr); err != nil {
 			t.Fatalf("%v %v", i, ptr)
@@ -17,7 +18,29 @@ func fakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	}
 }
 
-func fakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
+func FakeDaemonSet(t *testing.T) appsv1.DaemonSet {
+	var ds appsv1.DaemonSet
+	ds.Spec.Template.Spec.Volumes = []corev1.Volume{FakeVolume(t)}
+	FakeThroughPointers(t,
+		&ds.TypeMeta,
+		&ds.ObjectMeta,
+		&ds.Status,
+		&ds.ManagedFields,
+		&ds.Annotations,
+		&ds.Labels,
+		&ds.OwnerReferences,
+		&ds.Status,
+		&ds.Spec.Selector,
+		&ds.Spec.RevisionHistoryLimit,
+	)
+	ds.ManagedFields = []metav1.ManagedFieldsEntry{FakeManagedFields(t)}
+	ds.Spec.Template = FakePodTemplateSpec(t)
+	ds.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{FakeManagedFields(t)}
+
+	return ds
+}
+
+func FakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
 	m := metav1.ManagedFieldsEntry{}
 	if err := faker.FakeData(&m); err != nil {
 		t.Fatal(err)
@@ -28,10 +51,20 @@ func fakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
 	return m
 }
 
-func fakeNode(t *testing.T) corev1.Node {
+func FakePodTemplateSpec(t *testing.T) corev1.PodTemplateSpec {
+	var templateSpec corev1.PodTemplateSpec
+	if err := faker.FakeDataSkipFields(&templateSpec, []string{"Spec"}); err != nil {
+		t.Fatal(err)
+	}
+	templateSpec.Spec = FakePodSpec(t)
+	templateSpec.ManagedFields = []metav1.ManagedFieldsEntry{FakeManagedFields(t)}
+	return templateSpec
+}
+
+func FakeNode(t *testing.T) corev1.Node {
 	// faker chokes on Node.Status.{Capacity,Allocatable} so doing it by hand
 	var node corev1.Node
-	fakeThroughPointers(t,
+	FakeThroughPointers(t,
 		&node.TypeMeta,
 		&node.ObjectMeta,
 		&node.Spec,
@@ -45,8 +78,8 @@ func fakeNode(t *testing.T) corev1.Node {
 		&node.Status.VolumesAttached,
 		&node.Status.Config,
 	)
-	node.Status.Capacity = *fakeResourceList(t)
-	node.Status.Allocatable = *fakeResourceList(t)
+	node.Status.Capacity = *FakeResourceList(t)
+	node.Status.Allocatable = *FakeResourceList(t)
 	node.Spec.PodCIDR = "192.168.1.0/24"
 	node.Spec.PodCIDRs = []string{"192.168.1.0/24"}
 	node.Status.Addresses = []corev1.NodeAddress{
@@ -66,16 +99,16 @@ func fakeNode(t *testing.T) corev1.Node {
 	return node
 }
 
-func fakeResourceList(t *testing.T) *corev1.ResourceList {
+func FakeResourceList(t *testing.T) *corev1.ResourceList {
 	rl := make(corev1.ResourceList)
 	rl[corev1.ResourceName(faker.UUIDHyphenated())] = *apiresource.NewQuantity(faker.UnixTime(), apiresource.BinarySI)
 	return &rl
 }
 
-func fakeVolume(t *testing.T) corev1.Volume {
+func FakeVolume(t *testing.T) corev1.Volume {
 	// faker chokes on volume.VolumeSource.Ephemeral
 	var volume corev1.Volume
-	fakeThroughPointers(t,
+	FakeThroughPointers(t,
 		&volume.Name,
 		&volume.VolumeSource.HostPath,
 		&volume.VolumeSource.EmptyDir,
@@ -111,9 +144,9 @@ func fakeVolume(t *testing.T) corev1.Volume {
 	return volume
 }
 
-func fakeContainer(t *testing.T) corev1.Container {
+func FakeContainer(t *testing.T) corev1.Container {
 	var c corev1.Container
-	fakeThroughPointers(t,
+	FakeThroughPointers(t,
 		&c.Name,
 		&c.Image,
 		&c.Command,
@@ -135,8 +168,8 @@ func fakeContainer(t *testing.T) corev1.Container {
 		&c.SecurityContext,
 	)
 
-	c.Resources.Limits = *fakeResourceList(t)
-	c.Resources.Requests = *fakeResourceList(t)
+	c.Resources.Limits = *FakeResourceList(t)
+	c.Resources.Requests = *FakeResourceList(t)
 	c.LivenessProbe = &corev1.Probe{}
 	c.ReadinessProbe = &corev1.Probe{}
 	c.StartupProbe = &corev1.Probe{}
@@ -144,9 +177,9 @@ func fakeContainer(t *testing.T) corev1.Container {
 	return c
 }
 
-func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
+func FakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 	var c corev1.EphemeralContainer
-	fakeThroughPointers(t,
+	FakeThroughPointers(t,
 		&c.TargetContainerName,
 		&c.Name,
 		&c.Image,
@@ -169,8 +202,8 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 		&c.SecurityContext,
 	)
 
-	c.Resources.Limits = *fakeResourceList(t)
-	c.Resources.Requests = *fakeResourceList(t)
+	c.Resources.Limits = *FakeResourceList(t)
+	c.Resources.Requests = *FakeResourceList(t)
 	c.LivenessProbe = &corev1.Probe{}
 	c.ReadinessProbe = &corev1.Probe{}
 	c.StartupProbe = &corev1.Probe{}
@@ -178,15 +211,15 @@ func fakeEphemeralContainer(t *testing.T) corev1.EphemeralContainer {
 	return c
 }
 
-func fakePod(t *testing.T) corev1.Pod {
+func FakePod(t *testing.T) corev1.Pod {
 	var pod corev1.Pod
-	pod.Spec.Volumes = []corev1.Volume{fakeVolume(t)}
-	fakeThroughPointers(t,
+	pod.Spec.Volumes = []corev1.Volume{FakeVolume(t)}
+	FakeThroughPointers(t,
 		&pod.TypeMeta,
 		&pod.ObjectMeta,
 		&pod.Status,
 	)
-	pod.Spec = fakePodSpec(t)
+	pod.Spec = FakePodSpec(t)
 
 	pod.Status.HostIP = "192.168.1.2"
 	pod.Status.PodIP = "192.168.1.1"
@@ -194,7 +227,7 @@ func fakePod(t *testing.T) corev1.Pod {
 	return pod
 }
 
-func fakePodSpec(t *testing.T) corev1.PodSpec {
+func FakePodSpec(t *testing.T) corev1.PodSpec {
 	var podSpec corev1.PodSpec
 	if err := faker.FakeDataSkipFields(&podSpec, []string{
 		"RestartPolicy",
@@ -207,12 +240,50 @@ func fakePodSpec(t *testing.T) corev1.PodSpec {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	podSpec.Overhead = *fakeResourceList(t)
-	podSpec.InitContainers = []corev1.Container{fakeContainer(t)}
-	podSpec.Containers = []corev1.Container{fakeContainer(t)}
-	podSpec.EphemeralContainers = []corev1.EphemeralContainer{fakeEphemeralContainer(t)}
-	podSpec.Volumes = []corev1.Volume{fakeVolume(t)}
+	podSpec.Overhead = *FakeResourceList(t)
+	podSpec.InitContainers = []corev1.Container{FakeContainer(t)}
+	podSpec.Containers = []corev1.Container{FakeContainer(t)}
+	podSpec.EphemeralContainers = []corev1.EphemeralContainer{FakeEphemeralContainer(t)}
+	podSpec.Volumes = []corev1.Volume{FakeVolume(t)}
 	podSpec.RestartPolicy = "test"
 
 	return podSpec
+}
+
+func FakeSelector(_ *testing.T) *metav1.LabelSelector {
+	return &metav1.LabelSelector{
+		MatchExpressions: []metav1.LabelSelectorRequirement{
+			{
+				Key:      "test",
+				Operator: "test",
+				Values: []string{
+					"test1", "test2",
+				},
+			},
+		},
+		MatchLabels: map[string]string{
+			"test": "test",
+		},
+	}
+}
+
+func FakePersistentVolumeClaim(t *testing.T) *corev1.PersistentVolumeClaim {
+	claim := corev1.PersistentVolumeClaim{}
+	if err := faker.FakeDataSkipFields(&claim, []string{"Spec", "Status"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := faker.FakeDataSkipFields(&claim.Status, []string{"Capacity", "Phase"}); err != nil {
+		t.Fatal(err)
+	}
+
+	claim.ManagedFields = []metav1.ManagedFieldsEntry{FakeManagedFields(t)}
+	claim.Status.Phase = "test"
+	claim.Status.Capacity = *FakeResourceList(t)
+	if err := faker.FakeDataSkipFields(&claim.Spec, []string{"Resources"}); err != nil {
+		t.Fatal(err)
+	}
+	claim.Spec.Resources.Requests = *FakeResourceList(t)
+	claim.Spec.Resources.Limits = *FakeResourceList(t)
+
+	return &claim
 }

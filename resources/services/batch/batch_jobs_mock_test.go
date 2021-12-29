@@ -1,3 +1,8 @@
+//go:build mock
+//go:build mock
+// +build mock
+// +build mock
+
 package batch
 
 import (
@@ -24,8 +29,8 @@ func createBatchJobs(t *testing.T, ctrl *gomock.Controller) client.Services {
 	}
 
 	j.Spec.Template = fakePodTemplateSpec(t)
-	j.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
-	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{fakeManagedFields(t)}
+	j.ManagedFields = []metav1.ManagedFieldsEntry{testData.FakeManagedFields(t)}
+	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{testData.FakeManagedFields(t)}
 	jobs.EXPECT().List(gomock.Any(), metav1.ListOptions{}).Return(
 		&batchv1.JobList{Items: []batchv1.Job{j}}, nil,
 	)
