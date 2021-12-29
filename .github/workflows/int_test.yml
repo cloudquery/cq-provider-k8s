@@ -84,7 +84,7 @@ jobs:
 
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
-        if: ${{ failure() }}
+        if: ${{ failure() && github.event.pull_request.merged == 'true' }}
         env:
           SLACK_CHANNEL: oss-tests
           SLACK_COLOR: ${{ job.status }}
@@ -94,7 +94,7 @@ jobs:
 
       - name: Slack Notification Warnings
         uses: rtCamp/action-slack-notify@v2
-        if: ${{ success() && steps.integration-test.outputs.output != '' }}
+        if: ${{ success() && steps.integration-test.outputs.output != '' && github.event.pull_request.merged == 'true' }}
         env:
           SLACK_CHANNEL: oss-tests
           SLACK_COLOR: "#f29a35"
