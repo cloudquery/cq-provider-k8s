@@ -1,6 +1,4 @@
 //go:build mock
-//go:build mock
-// +build mock
 // +build mock
 
 package batch
@@ -10,6 +8,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-k8s/client"
 	"github.com/cloudquery/cq-provider-k8s/client/mocks"
+	"github.com/cloudquery/cq-provider-k8s/resources/services/testData"
 	"github.com/cloudquery/faker/v3"
 	"github.com/golang/mock/gomock"
 	batchv1 "k8s.io/api/batch/v1"
@@ -28,7 +27,7 @@ func createBatchJobs(t *testing.T, ctrl *gomock.Controller) client.Services {
 		t.Fatal(err)
 	}
 
-	j.Spec.Template = fakePodTemplateSpec(t)
+	j.Spec.Template = testData.FakePodTemplateSpec(t)
 	j.ManagedFields = []metav1.ManagedFieldsEntry{testData.FakeManagedFields(t)}
 	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{testData.FakeManagedFields(t)}
 	jobs.EXPECT().List(gomock.Any(), metav1.ListOptions{}).Return(
