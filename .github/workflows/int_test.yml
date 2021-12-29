@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Deploy postgres
-        id: depoly_pg
+        id: deploy_pg
         working-directory: resources/integration_tests/infra
         run: |
           kubectl apply -f  postgres.yml
@@ -70,8 +70,8 @@ jobs:
           exit $result_code
         env:
           INTEGRATION_TESTS: 1
-          KUBECONFIG: ${{steps.depoly_pg.outputs.kubepath}} # path should be absolute
-          DATABASE_URL: host=${{steps.depoly_pg.outputs.host}} user=postgres password=pass database=postgres port=${{steps.depoly_pg.outputs.port}} sslmode=disable
+          KUBECONFIG: ${{steps.deploy_pg.outputs.kubepath}} # path should be absolute
+          DATABASE_URL: host=${{steps.deploy_pg.outputs.host}} user=postgres password=pass database=postgres port=${{steps.deploy_pg.outputs.port}} sslmode=disable
           CQ_NO_TELEMETRY: 1
 
       - name: Destroy terraform resources
