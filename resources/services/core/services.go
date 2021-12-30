@@ -195,10 +195,11 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.IPFamilyPolicy"),
 			},
 			{
-				Name:        "allocate_load_balancer_node_ports",
-				Description: "Defines if NodePorts will be automatically allocated for services with type LoadBalancer",
-				Type:        schema.TypeBool,
-				Resolver:    schema.PathResolver("Spec.AllocateLoadBalancerNodePorts"),
+				Name:          "allocate_load_balancer_node_ports",
+				Description:   "Defines if NodePorts will be automatically allocated for services with type LoadBalancer",
+				Type:          schema.TypeBool,
+				Resolver:      schema.PathResolver("Spec.AllocateLoadBalancerNodePorts"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:          "load_balancer_class",
