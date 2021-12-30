@@ -13,12 +13,13 @@ import (
 
 func Jobs() *schema.Table {
 	return &schema.Table{
-		Name:         "k8s_batch_jobs",
-		Description:  "Job represents the configuration of a single job.",
-		Resolver:     fetchBatchJobs,
-		Multiplex:    client.ContextMultiplex,
-		DeleteFilter: client.DeleteContextFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
+		Name:          "k8s_batch_jobs",
+		Description:   "Job represents the configuration of a single job.",
+		Resolver:      fetchBatchJobs,
+		Multiplex:     client.ContextMultiplex,
+		DeleteFilter:  client.DeleteContextFilter,
+		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
+		IgnoreInTests: true,
 		Columns: []schema.Column{
 			client.CommonContextField,
 			{
@@ -204,9 +205,10 @@ func Jobs() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "k8s_batch_job_selector_match_expressions",
-				Description: "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-				Resolver:    fetchBatchJobSelectorMatchExpressions,
+				Name:          "k8s_batch_job_selector_match_expressions",
+				Description:   "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+				Resolver:      fetchBatchJobSelectorMatchExpressions,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "job_cq_id",
@@ -232,9 +234,10 @@ func Jobs() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_batch_job_status_conditions",
-				Description: "JobCondition describes current state of a job.",
-				Resolver:    fetchBatchJobStatusConditions,
+				Name:          "k8s_batch_job_status_conditions",
+				Description:   "JobCondition describes current state of a job.",
+				Resolver:      fetchBatchJobStatusConditions,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "job_cq_id",

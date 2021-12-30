@@ -9,6 +9,6 @@ import (
 	"github.com/cloudquery/cq-provider-k8s/client"
 )
 
-func TestIntegrationRoles(t *testing.T) {
-	client.K8sTestHelper(t, Roles(), "./snapshots")
+func TestIntegrationRoleBindings(t *testing.T) {
+	client.K8sTestHelper(t, RoleBindings(), "./snapshots")
 }
