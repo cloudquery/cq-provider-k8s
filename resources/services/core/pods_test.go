@@ -1,5 +1,5 @@
-//go:build mock
-// +build mock
+//go:build integration
+// +build integration
 
 package core
 

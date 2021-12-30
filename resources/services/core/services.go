@@ -65,10 +65,11 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("ObjectMeta.Generation"),
 			},
 			{
-				Name:        "deletion_grace_period_seconds",
-				Description: "Number of seconds allowed for this object to gracefully terminate.",
-				Type:        schema.TypeBigInt,
-				Resolver:    schema.PathResolver("ObjectMeta.DeletionGracePeriodSeconds"),
+				Name:          "deletion_grace_period_seconds",
+				Description:   "Number of seconds allowed for this object to gracefully terminate.",
+				Type:          schema.TypeBigInt,
+				Resolver:      schema.PathResolver("ObjectMeta.DeletionGracePeriodSeconds"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "labels",
@@ -83,16 +84,18 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("ObjectMeta.Annotations"),
 			},
 			{
-				Name:        "owner_references",
-				Description: "List of objects depended by this object.",
-				Type:        schema.TypeJSON,
-				Resolver:    resolveCoreServiceOwnerReferences,
+				Name:          "owner_references",
+				Description:   "List of objects depended by this object.",
+				Type:          schema.TypeJSON,
+				Resolver:      resolveCoreServiceOwnerReferences,
+				IgnoreInTests: true,
 			},
 			{
-				Name:        "finalizers",
-				Description: "List of finalizers",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("ObjectMeta.Finalizers"),
+				Name:          "finalizers",
+				Description:   "List of finalizers",
+				Type:          schema.TypeStringArray,
+				Resolver:      schema.PathResolver("ObjectMeta.Finalizers"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "cluster_name",
@@ -143,10 +146,11 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.LoadBalancerIP"),
 			},
 			{
-				Name:        "load_balancer_source_ranges",
-				Description: "If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer to the specified client IPs",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("Spec.LoadBalancerSourceRanges"),
+				Name:          "load_balancer_source_ranges",
+				Description:   "If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer to the specified client IPs",
+				Type:          schema.TypeStringArray,
+				Resolver:      schema.PathResolver("Spec.LoadBalancerSourceRanges"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "external_name",
@@ -197,10 +201,11 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.AllocateLoadBalancerNodePorts"),
 			},
 			{
-				Name:        "load_balancer_class",
-				Description: "The class of the load balancer implementation this Service belongs to.",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Spec.LoadBalancerClass"),
+				Name:          "load_balancer_class",
+				Description:   "The class of the load balancer implementation this Service belongs to.",
+				Type:          schema.TypeString,
+				Resolver:      schema.PathResolver("Spec.LoadBalancerClass"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "internal_traffic_policy",
@@ -232,9 +237,10 @@ func Services() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
-						Name:        "app_protocol",
-						Description: "The application protocol for this port.",
-						Type:        schema.TypeString,
+						Name:          "app_protocol",
+						Description:   "The application protocol for this port.",
+						Type:          schema.TypeString,
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "port",
@@ -267,9 +273,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_core_service_load_balancer_ingresses",
-				Description: "LoadBalancerIngress represents the status of a load-balancer ingress point: traffic intended for the service should be sent to an ingress point.",
-				Resolver:    fetchCoreServiceLoadBalancerIngresses,
+				IgnoreInTests: true,
+				Name:          "k8s_core_service_load_balancer_ingresses",
+				Description:   "LoadBalancerIngress represents the status of a load-balancer ingress point: traffic intended for the service should be sent to an ingress point.",
+				Resolver:      fetchCoreServiceLoadBalancerIngresses,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -291,8 +298,9 @@ func Services() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:     "k8s_core_service_load_balancer_ingress_ports",
-						Resolver: fetchCoreServiceLoadBalancerIngressPorts,
+						IgnoreInTests: true,
+						Name:          "k8s_core_service_load_balancer_ingress_ports",
+						Resolver:      fetchCoreServiceLoadBalancerIngressPorts,
 						Columns: []schema.Column{
 							{
 								Name:        "service_load_balancer_ingress_cq_id",
@@ -320,9 +328,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "k8s_core_service_conditions",
-				Description: "Condition contains details for one aspect of the current state of this API Resource. --- This struct is intended for direct use as an array at the field path .status.conditions",
-				Resolver:    fetchCoreServiceConditions,
+				IgnoreInTests: true,
+				Name:          "k8s_core_service_conditions",
+				Description:   "Condition contains details for one aspect of the current state of this API Resource. --- This struct is intended for direct use as an array at the field path .status.conditions",
+				Resolver:      fetchCoreServiceConditions,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
