@@ -3,8 +3,7 @@ module github.com/cloudquery/cq-provider-k8s
 go 1.17
 
 require (
-	github.com/Masterminds/squirrel v1.5.0
-	github.com/cloudquery/cq-provider-sdk v0.6.0-rc1
+	github.com/cloudquery/cq-provider-sdk v0.6.1
 	github.com/cloudquery/faker/v3 v3.7.5
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-hclog v1.0.0
@@ -22,6 +21,7 @@ require (
 	github.com/Azure/go-autorest/autorest/date v0.3.0 // indirect
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
+	github.com/Masterminds/squirrel v1.5.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/creasty/defaults v1.5.2 // indirect
@@ -60,7 +60,6 @@ require (
 	github.com/jackc/pgx/v4 v4.13.0 // indirect
 	github.com/jackc/puddle v1.1.4 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
-	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
