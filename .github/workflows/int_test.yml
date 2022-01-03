@@ -64,11 +64,7 @@ jobs:
 
       - name: Integration Test
         run: |
-          touch output.log
-          go test -v -p 20 -tags=integration ./... | tee output.log
-          result_code=${PIPESTATUS[0]}
-          echo "::set-output name=output::$(cat output.log | grep -i "WARN")"
-          exit $result_code
+          go test -tags=integration ./...
         env:
           INTEGRATION_TESTS: 1
           KUBECONFIG: ${{steps.deploy_pg.outputs.kubepath}} # path should be absolute

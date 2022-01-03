@@ -3,7 +3,6 @@ package client
 import (
 	"testing"
 
-	"github.com/cloudquery/cq-provider-sdk/logging"
 	"github.com/cloudquery/cq-provider-sdk/provider"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	providertest "github.com/cloudquery/cq-provider-sdk/provider/testing"
@@ -48,9 +47,7 @@ func K8sMockTestHelper(t *testing.T, table *schema.Table, builder func(*testing.
 			Version: "development",
 			Configure: func(logger hclog.Logger, _ interface{}) (schema.ClientMeta, error) {
 				c := &Client{
-					Log: logging.New(&hclog.LoggerOptions{
-						Level: hclog.Warn,
-					}),
+					Log:     logger,
 					Context: "testContext",
 				}
 				c.SetServices(map[string]Services{"testContext": builder(t, ctrl)})
