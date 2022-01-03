@@ -166,7 +166,7 @@ func CronJobs() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchBatchCronJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchBatchCronJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	jobs := meta.(*client.Client).Services().CronJobs
 	opts := metav1.ListOptions{}
 	for {

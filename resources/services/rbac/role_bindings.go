@@ -182,7 +182,7 @@ func RoleBindings() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchRbacRoleBindings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchRbacRoleBindings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().RoleBindings
 	opts := metav1.ListOptions{}
 	for {
@@ -219,7 +219,7 @@ func resolveRbacRoleBindingsManagedFields(ctx context.Context, meta schema.Clien
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchRbacRoleBindingSubjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchRbacRoleBindingSubjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	role, ok := parent.Item.(rbacv1.RoleBinding)
 	if !ok {
 		return fmt.Errorf("not a rbacv1.RoleBinding instance: %T", parent.Item)

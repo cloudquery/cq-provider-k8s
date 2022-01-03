@@ -171,7 +171,7 @@ func Roles() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchRbacRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchRbacRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().Roles
 	opts := metav1.ListOptions{}
 	for {
@@ -208,7 +208,7 @@ func resolveRbacRolesManagedFields(ctx context.Context, meta schema.ClientMeta, 
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchRbacRoleRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchRbacRoleRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	role, ok := parent.Item.(rbacv1.Role)
 	if !ok {
 		return fmt.Errorf("not a rbacv1.Role instance: %T", parent.Item)

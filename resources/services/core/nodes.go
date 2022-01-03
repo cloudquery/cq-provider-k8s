@@ -313,7 +313,7 @@ func Nodes() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchCoreNodes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreNodes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	nodes := meta.(*client.Client).Services().Nodes
 	opts := metav1.ListOptions{}
 	for {
@@ -396,7 +396,7 @@ func resolveCoreNodeConditions(ctx context.Context, meta schema.ClientMeta, reso
 	return resource.Set(c.Name, b)
 }
 
-func fetchCoreNodeImages(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreNodeImages(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	node, ok := parent.Item.(corev1.Node)
 	if !ok {
 		return fmt.Errorf("not a corev1.Node instance: %T", parent.Item)
@@ -405,7 +405,7 @@ func fetchCoreNodeImages(ctx context.Context, meta schema.ClientMeta, parent *sc
 	return nil
 }
 
-func fetchCoreNodeVolumesAttached(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreNodeVolumesAttached(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	node, ok := parent.Item.(corev1.Node)
 	if !ok {
 		return fmt.Errorf("not a corev1.Node instance: %T", parent.Item)

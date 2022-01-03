@@ -395,7 +395,7 @@ func NetworkPolicies() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchNetworkingNetworkPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().NetworkPolicies
 	opts := metav1.ListOptions{}
 	for {
@@ -432,7 +432,7 @@ func resolveNetworkingNetworkPoliciesManagedFields(ctx context.Context, meta sch
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchNetworkingNetworkPolicyPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyPodSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicy)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
@@ -440,7 +440,7 @@ func fetchNetworkingNetworkPolicyPodSelectorMatchExpressions(ctx context.Context
 	res <- p.Spec.PodSelector.MatchExpressions
 	return nil
 }
-func fetchNetworkingNetworkPolicyIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicy)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
@@ -448,7 +448,7 @@ func fetchNetworkingNetworkPolicyIngresses(ctx context.Context, meta schema.Clie
 	res <- p.Spec.Ingress
 	return nil
 }
-func fetchNetworkingNetworkPolicyIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicyIngressRule)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
@@ -456,7 +456,7 @@ func fetchNetworkingNetworkPolicyIngressPorts(ctx context.Context, meta schema.C
 	res <- p.Ports
 	return nil
 }
-func fetchNetworkingNetworkPolicyIngressFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyIngressFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicyIngressRule)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
@@ -492,7 +492,7 @@ func resolveNetworkingNetworkPolicyIngressFromsNamespaceSelectorMatchExpressions
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchNetworkingNetworkPolicyEgresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyEgresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicy)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicy instance: %T", parent.Item)
@@ -500,7 +500,7 @@ func fetchNetworkingNetworkPolicyEgresses(ctx context.Context, meta schema.Clien
 	res <- p.Spec.Egress
 	return nil
 }
-func fetchNetworkingNetworkPolicyEgressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyEgressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicyEgressRule)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)
@@ -508,7 +508,7 @@ func fetchNetworkingNetworkPolicyEgressPorts(ctx context.Context, meta schema.Cl
 	res <- p.Ports
 	return nil
 }
-func fetchNetworkingNetworkPolicyEgressTos(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchNetworkingNetworkPolicyEgressTos(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(networkingv1.NetworkPolicyEgressRule)
 	if !ok {
 		return fmt.Errorf("not a networkingv1.NetworkPolicyIngressRule instance: %T", parent.Item)

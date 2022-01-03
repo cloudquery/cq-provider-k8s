@@ -201,7 +201,7 @@ func Namespaces() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchCoreNamespaces(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreNamespaces(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	namespaces := meta.(*client.Client).Services().Namespaces
 	opts := metav1.ListOptions{}
 	for {

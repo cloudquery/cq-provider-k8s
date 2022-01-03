@@ -336,7 +336,7 @@ func Endpoints() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchCoreEndpoints(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+func fetchCoreEndpoints(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client).Services().Endpoints
 	opts := metav1.ListOptions{}
 	for {
@@ -404,7 +404,7 @@ func resolveCoreEndpointSubsetNotReadyAddressesIP(ctx context.Context, meta sche
 	return resource.Set(c.Name, ip)
 }
 
-func fetchCoreEndpointSubsets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreEndpointSubsets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	endpoints, ok := parent.Item.(corev1.Endpoints)
 	if !ok {
 		return fmt.Errorf("not a corev1.Endpoints instance: %T", parent.Item)
@@ -413,7 +413,7 @@ func fetchCoreEndpointSubsets(_ context.Context, _ schema.ClientMeta, parent *sc
 	return nil
 }
 
-func fetchCoreEndpointSubsetAddresses(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreEndpointSubsetAddresses(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	endpointSubset, ok := parent.Item.(corev1.EndpointSubset)
 	if !ok {
 		return fmt.Errorf("not a corev1.EndpointSubset instance: %T", parent.Item)
@@ -422,7 +422,7 @@ func fetchCoreEndpointSubsetAddresses(_ context.Context, _ schema.ClientMeta, pa
 	return nil
 }
 
-func fetchCoreEndpointSubsetNotReadyAddresses(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreEndpointSubsetNotReadyAddresses(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	endpointSubset, ok := parent.Item.(corev1.EndpointSubset)
 	if !ok {
 		return fmt.Errorf("not a corev1.EndpointSubset instance: %T", parent.Item)
@@ -431,7 +431,7 @@ func fetchCoreEndpointSubsetNotReadyAddresses(_ context.Context, _ schema.Client
 	return nil
 }
 
-func fetchCoreEndpointSubsetPorts(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreEndpointSubsetPorts(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	endpointSubset, ok := parent.Item.(corev1.EndpointSubset)
 	if !ok {
 		return fmt.Errorf("not a corev1.EndpointSubset instance: %T", parent.Item)

@@ -230,7 +230,7 @@ func ReplicaSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchAppsReplicaSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsReplicaSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().ReplicaSets
 	opts := metav1.ListOptions{}
 	for {
@@ -278,7 +278,7 @@ func resolveAppsReplicaSetsTemplate(ctx context.Context, meta schema.ClientMeta,
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchAppsReplicaSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsReplicaSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.ReplicaSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)
@@ -289,7 +289,7 @@ func fetchAppsReplicaSetSelectorMatchExpressions(ctx context.Context, meta schem
 	res <- p.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchAppsReplicaSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsReplicaSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.ReplicaSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.ReplicaSet instance: %T", parent.Item)

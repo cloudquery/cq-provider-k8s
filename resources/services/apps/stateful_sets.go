@@ -290,7 +290,7 @@ func StatefulSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchAppsStatefulSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsStatefulSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().StatefulSets
 	opts := metav1.ListOptions{}
 	for {
@@ -349,7 +349,7 @@ func resolveAppsStatefulSetsVolumeClaimTemplates(ctx context.Context, meta schem
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchAppsStatefulSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsStatefulSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.StatefulSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.StatefulSet instance: %T", parent.Item)
@@ -360,7 +360,7 @@ func fetchAppsStatefulSetSelectorMatchExpressions(ctx context.Context, meta sche
 	res <- p.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchAppsStatefulSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsStatefulSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.StatefulSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.StatefulSet instance: %T", parent.Item)

@@ -374,7 +374,7 @@ func Services() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchCoreServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	services := meta.(*client.Client).Services().Services
 	opts := metav1.ListOptions{}
 	for {
@@ -452,7 +452,7 @@ func resolveCoreServiceOwnerReferences(ctx context.Context, meta schema.ClientMe
 	return resource.Set(c.Name, b)
 }
 
-func fetchCoreServicePorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServicePorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	service, ok := parent.Item.(corev1.Service)
 	if !ok {
 		return fmt.Errorf("not a corev1.Service instance: %T", parent.Item)
@@ -461,7 +461,7 @@ func fetchCoreServicePorts(ctx context.Context, meta schema.ClientMeta, parent *
 	return nil
 }
 
-func fetchCoreServiceLoadBalancerIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServiceLoadBalancerIngresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	service, ok := parent.Item.(corev1.Service)
 	if !ok {
 		return fmt.Errorf("not a corev1.Service instance: %T", parent.Item)
@@ -470,7 +470,7 @@ func fetchCoreServiceLoadBalancerIngresses(ctx context.Context, meta schema.Clie
 	return nil
 }
 
-func fetchCoreServiceLoadBalancerIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServiceLoadBalancerIngressPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	ingress, ok := parent.Item.(corev1.LoadBalancerIngress)
 	if !ok {
 		return fmt.Errorf("not a corev1.LoadBalancerIngress instance: %T", parent.Item)
@@ -479,7 +479,7 @@ func fetchCoreServiceLoadBalancerIngressPorts(ctx context.Context, meta schema.C
 	return nil
 }
 
-func fetchCoreServiceConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServiceConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	service, ok := parent.Item.(corev1.Service)
 	if !ok {
 		return fmt.Errorf("not a corev1.Service instance: %T", parent.Item)

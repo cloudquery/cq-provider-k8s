@@ -1718,7 +1718,7 @@ func Pods() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchCorePods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pods := meta.(*client.Client).Services().Pods
 	result, err := pods.List(ctx, metav1.ListOptions{})
 	if err != nil {
@@ -1894,7 +1894,7 @@ func resolveCorePodConditions(ctx context.Context, meta schema.ClientMeta, resou
 	return resource.Set(c.Name, b)
 }
 
-func fetchCorePodInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodInitContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -1917,7 +1917,7 @@ func resolveContainerJSONField(fieldResolver func(c corev1.Container) interface{
 	}
 }
 
-func fetchCorePodContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
@@ -1926,7 +1926,7 @@ func fetchCorePodContainerPorts(ctx context.Context, meta schema.ClientMeta, par
 	return nil
 }
 
-func fetchCorePodContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
@@ -1935,7 +1935,7 @@ func fetchCorePodContainerEnvs(ctx context.Context, meta schema.ClientMeta, pare
 	return nil
 }
 
-func fetchCorePodContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
@@ -1944,7 +1944,7 @@ func fetchCorePodContainerVolumeMounts(ctx context.Context, meta schema.ClientMe
 	return nil
 }
 
-func fetchCorePodContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.Container)
 	if !ok {
 		return fmt.Errorf("not a corev1.Container instance: %T", parent.Item)
@@ -1953,7 +1953,7 @@ func fetchCorePodContainerVolumeDevices(ctx context.Context, meta schema.ClientM
 	return nil
 }
 
-func fetchCorePodContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -1962,7 +1962,7 @@ func fetchCorePodContainers(ctx context.Context, meta schema.ClientMeta, parent 
 	return nil
 }
 
-func fetchCorePodEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -1985,7 +1985,7 @@ func resolveEphemeralContainerJSONField(fieldResolver func(c corev1.EphemeralCon
 	}
 }
 
-func fetchCorePodEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainerPorts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
 		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
@@ -1994,7 +1994,7 @@ func fetchCorePodEphemeralContainerPorts(ctx context.Context, meta schema.Client
 	return nil
 }
 
-func fetchCorePodEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
 		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
@@ -2003,7 +2003,7 @@ func fetchCorePodEphemeralContainerEnvs(ctx context.Context, meta schema.ClientM
 	return nil
 }
 
-func fetchCorePodEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
 		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
@@ -2012,7 +2012,7 @@ func fetchCorePodEphemeralContainerVolumeMounts(ctx context.Context, meta schema
 	return nil
 }
 
-func fetchCorePodEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainerVolumeDevices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	cont, ok := parent.Item.(corev1.EphemeralContainer)
 	if !ok {
 		return fmt.Errorf("not a corev1.EphemeralContainer instance: %T", parent.Item)
@@ -2021,7 +2021,7 @@ func fetchCorePodEphemeralContainerVolumeDevices(ctx context.Context, meta schem
 	return nil
 }
 
-func fetchCorePodVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -2044,7 +2044,7 @@ func resolveVolumeJSONField(fieldResolver func(v corev1.Volume) interface{}) fun
 	}
 }
 
-func fetchCorePodInitContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodInitContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -2067,7 +2067,7 @@ func resolveContainerStatusJSONField(fieldResolver func(s corev1.ContainerStatus
 	}
 }
 
-func fetchCorePodContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)
@@ -2076,7 +2076,7 @@ func fetchCorePodContainerStatuses(ctx context.Context, meta schema.ClientMeta, 
 	return nil
 }
 
-func fetchCorePodEphemeralContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCorePodEphemeralContainerStatuses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	pod, ok := parent.Item.(corev1.Pod)
 	if !ok {
 		return fmt.Errorf("not a corev1.Pod instance: %T", parent.Item)

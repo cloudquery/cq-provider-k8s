@@ -296,7 +296,7 @@ func DaemonSets() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchDaemonSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchDaemonSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().DaemonSets
 	opts := metav1.ListOptions{}
 	for {
@@ -344,7 +344,7 @@ func resolveDaemonSetsTemplate(ctx context.Context, meta schema.ClientMeta, reso
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchDaemonSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchDaemonSetSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.DaemonSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.DaemonSet instance: %T", parent.Item)
@@ -355,7 +355,7 @@ func fetchDaemonSetSelectorMatchExpressions(ctx context.Context, meta schema.Cli
 	res <- p.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchDaemonSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchDaemonSetStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(appsv1.DaemonSet)
 	if !ok {
 		return fmt.Errorf("not a appsv1.DaemonSet instance: %T", parent.Item)

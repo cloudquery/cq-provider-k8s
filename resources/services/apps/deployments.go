@@ -308,7 +308,7 @@ func Deployments() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchAppsDeployments(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsDeployments(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().Deployments
 	opts := metav1.ListOptions{}
 	for {
@@ -356,7 +356,7 @@ func resolveAppsDeploymentsTemplate(ctx context.Context, meta schema.ClientMeta,
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)
@@ -367,7 +367,7 @@ func fetchAppsDeploymentSelectorMatchExpressions(ctx context.Context, meta schem
 	res <- deployment.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchAppsDeploymentStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchAppsDeploymentStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	deployment, ok := parent.Item.(appsv1.Deployment)
 	if !ok {
 		return fmt.Errorf("not a appsv1.Deployment instance: %T", parent.Item)

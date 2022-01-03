@@ -180,7 +180,7 @@ func LimitRanges() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchCoreLimitRanges(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+func fetchCoreLimitRanges(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client).Services().LimitRanges
 	opts := metav1.ListOptions{}
 	for {
@@ -220,7 +220,7 @@ func resolveCoreLimitRangesManagedFields(_ context.Context, _ schema.ClientMeta,
 	return resource.Set(c.Name, b)
 }
 
-func fetchCoreLimitRangeLimits(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreLimitRangeLimits(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	limitRange, ok := parent.Item.(corev1.LimitRange)
 	if !ok {
 		return fmt.Errorf("not a corev1.LimitRange instance: %T", parent.Item)

@@ -275,7 +275,7 @@ func Jobs() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	client := meta.(*client.Client).Services().Jobs
 	opts := metav1.ListOptions{}
 	for {
@@ -325,7 +325,7 @@ func resolveBatchJobsTemplate(ctx context.Context, meta schema.ClientMeta, resou
 	}
 	return resource.Set(c.Name, b)
 }
-func fetchBatchJobSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchBatchJobSelectorMatchExpressions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	job, ok := parent.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)
@@ -337,7 +337,7 @@ func fetchBatchJobSelectorMatchExpressions(ctx context.Context, meta schema.Clie
 	res <- job.Spec.Selector.MatchExpressions
 	return nil
 }
-func fetchBatchJobStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchBatchJobStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	job, ok := parent.Item.(batchv1.Job)
 	if !ok {
 		return fmt.Errorf("not a batchv1.Job instance: %T", parent.Item)

@@ -192,7 +192,7 @@ func ServiceAccounts() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchCoreServiceAccounts(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+func fetchCoreServiceAccounts(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client).Services().ServiceAccounts
 	opts := metav1.ListOptions{}
 	for {
@@ -244,7 +244,7 @@ func resolveCoreServiceAccountsImagePullSecretNames(_ context.Context, _ schema.
 	return resource.Set(c.Name, imagePullSecrets)
 }
 
-func fetchCoreServiceAccountSecrets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreServiceAccountSecrets(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	serviceAccount, ok := parent.Item.(corev1.ServiceAccount)
 	if !ok {
 		return fmt.Errorf("not a corev1.ServiceAccount instance: %T", parent.Item)

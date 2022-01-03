@@ -187,7 +187,7 @@ func ResourceQuotas() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchCoreResourceQuotas(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+func fetchCoreResourceQuotas(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client).Services().ResourceQuotas
 	opts := metav1.ListOptions{}
 	for {
@@ -227,7 +227,7 @@ func resolveCoreResourceQuotasManagedFields(_ context.Context, _ schema.ClientMe
 	return resource.Set(c.Name, b)
 }
 
-func fetchCoreResourceQuotaScopeSelectorMatchExpressions(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchCoreResourceQuotaScopeSelectorMatchExpressions(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	resourceQuota, ok := parent.Item.(corev1.ResourceQuota)
 	if !ok {
 		return fmt.Errorf("not a corev1.ResourceQuota instance: %T", parent.Item)
