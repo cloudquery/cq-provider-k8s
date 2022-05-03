@@ -70,7 +70,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		logger.Debug("no context set in configuration using current default defined context", "context", kCfg.CurrentContext)
 		contexts = []string{kCfg.CurrentContext}
 	case 1:
-		if cfg.Contexts[0] != "*" {
+		if cfg.Contexts[0] == "*" {
 			logger.Debug("loading all available configuration")
 			for cName := range kCfg.Contexts {
 				contexts = append(contexts, cName)
