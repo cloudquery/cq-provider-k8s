@@ -8,7 +8,7 @@ import (
 	k8s "k8s.io/apimachinery/pkg/api/errors"
 )
 
-func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) diag.Diagnostics {
+func ErrorClassifier(_ schema.ClientMeta, resourceName string, err error) diag.Diagnostics {
 	return classifyError(err, diag.RESOLVING, diag.WithResourceName(resourceName))
 }
 
