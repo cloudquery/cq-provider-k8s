@@ -19,5 +19,14 @@ export KUBECONFIG=<PATH_TO_YOUR_CONFIG_FILE>
 ```
 
 ### Configuration
-
-At the moment provider does not have any configuration.
+By default cloudquery fetches data from default context of the config. Context can be selected by setting contexts variable of provider's `configuration` block in `config.hcl`.  
+Example of context selection:
+```
+provider "k8s" {
+  configuration {
+    // Optional. Set contexts that you want to fetch. If it is not given then all contexts from config are iterated over.
+    contexts = ["one"]
+  }
+}
+```
+To fetch all the contexts set `contexts = ["*"]`
