@@ -76,6 +76,9 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 				contexts = append(contexts, cName)
 			}
 		} else {
+			if _, ok := kCfg.Contexts[cfg.Contexts[0]]; !ok {
+				return nil, diag.FromError(fmt.Errorf("context %q doesn't exist in kube configuration", cfg.Contexts[0]), diag.USER)
+			}
 			contexts = []string{cfg.Contexts[0]}
 		}
 	default:
