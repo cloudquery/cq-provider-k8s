@@ -18,7 +18,7 @@ func Jobs() *schema.Table {
 		Resolver:      fetchBatchJobs,
 		Multiplex:     client.ContextMultiplex,
 		DeleteFilter:  client.DeleteContextFilter,
-		IgnoreError:   client.IgnoreForbidden,
+		IgnoreError:   client.IgnoreForbiddenNotFound,
 		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		IgnoreInTests: true,
 		Columns: []schema.Column{
@@ -277,10 +277,10 @@ func Jobs() *schema.Table {
 // ====================================================================================================================
 
 func fetchBatchJobs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	client := meta.(*client.Client).Services().Jobs
+	cl := meta.(*client.Client).Services().Jobs
 	opts := metav1.ListOptions{}
 	for {
-		result, err := client.List(ctx, opts)
+		result, err := cl.List(ctx, opts)
 		if err != nil {
 			return err
 		}

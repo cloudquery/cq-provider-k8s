@@ -18,7 +18,7 @@ func DaemonSets() *schema.Table {
 		Resolver:     fetchDaemonSets,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
-		IgnoreError:  client.IgnoreForbidden,
+		IgnoreError:  client.IgnoreForbiddenNotFound,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
@@ -298,10 +298,10 @@ func DaemonSets() *schema.Table {
 // ====================================================================================================================
 
 func fetchDaemonSets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	client := meta.(*client.Client).Services().DaemonSets
+	cl := meta.(*client.Client).Services().DaemonSets
 	opts := metav1.ListOptions{}
 	for {
-		result, err := client.List(ctx, opts)
+		result, err := cl.List(ctx, opts)
 		if err != nil {
 			return err
 		}

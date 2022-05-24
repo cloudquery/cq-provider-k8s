@@ -18,7 +18,7 @@ func Deployments() *schema.Table {
 		Resolver:     fetchAppsDeployments,
 		Multiplex:    client.ContextMultiplex,
 		DeleteFilter: client.DeleteContextFilter,
-		IgnoreError:  client.IgnoreForbidden,
+		IgnoreError:  client.IgnoreForbiddenNotFound,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"uid"}},
 		Columns: []schema.Column{
 			client.CommonContextField,
@@ -310,10 +310,10 @@ func Deployments() *schema.Table {
 // ====================================================================================================================
 
 func fetchAppsDeployments(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	client := meta.(*client.Client).Services().Deployments
+	cl := meta.(*client.Client).Services().Deployments
 	opts := metav1.ListOptions{}
 	for {
-		result, err := client.List(ctx, opts)
+		result, err := cl.List(ctx, opts)
 		if err != nil {
 			return err
 		}
