@@ -105,7 +105,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		logger.Info("creating k8s client for context", "context", ctxName)
 		kClient, err := buildKubeClient(kCfg, ctxName)
 		if err != nil {
-			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", kCfg.CurrentContext, err), diag.INTERNAL)
+			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", ctxName, err), diag.INTERNAL)
 		}
 		c.services[ctxName] = initServices(kClient)
 	}
