@@ -89,7 +89,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 	}
 
 	if len(contexts) == 0 {
-		return nil, diag.FromError(fmt.Errorf("could not find any context"), diag.USER)
+		return nil, diag.FromError(fmt.Errorf("could not find any context"), diag.USER, diag.WithDetails("Try to add context, https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-context-and-configuration"))
 	}
 
 	c := Client{
