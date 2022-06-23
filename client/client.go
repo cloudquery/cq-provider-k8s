@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -19,6 +20,7 @@ type Client struct {
 	kConfig  api.Config
 	config   *Config
 	contexts []string
+	paths    map[string]struct{}
 
 	Context string
 }
@@ -94,6 +96,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		config:   cfg,
 		contexts: contexts,
 		Context:  contexts[0],
+		paths:    make(map[string]struct{}),
 	}
 
 	for _, ctxName := range contexts {
@@ -102,6 +105,9 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		if err != nil {
 			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", kCfg.CurrentContext, err), diag.INTERNAL)
 		}
+
+		c.paths, err = getApisMap(kClient)
+
 		c.services[kCfg.CurrentContext] = initServices(kClient)
 	}
 
@@ -122,6 +128,21 @@ func buildKubeClient(kubeConfig api.Config, ctx string) (*kubernetes.Clientset, 
 		return nil, err
 	}
 	return kubernetes.NewForConfig(restConfig)
+}
+
+func getApisMap(client *kubernetes.Clientset) (map[string]struct{}, error) {
+	doc, err := client.OpenAPISchema()
+	if err != nil {
+		return nil, err
+	}
+	paths := make(map[string]struct{})
+	for _, p := range doc.Paths.Path {
+		path := p.Name
+		if strings.HasPrefix(path, "/apis/") {
+			paths[path] = struct{}{}
+		}
+	}
+	return paths, nil
 }
 
 func initServices(client *kubernetes.Clientset) Services {
