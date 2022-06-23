@@ -106,7 +106,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", kCfg.CurrentContext, err), diag.INTERNAL)
 		}
 
-		c.paths, err = getApisMap(kClient)
+		c.paths, _ = getApisMap(kClient)
 
 		c.services[kCfg.CurrentContext] = initServices(kClient)
 	}
