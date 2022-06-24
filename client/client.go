@@ -106,7 +106,10 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", kCfg.CurrentContext, err), diag.INTERNAL)
 		}
 
-		c.paths, _ = getApisMap(kClient)
+		c.paths, err = getApisMap(kClient)
+		if err != nil {
+			c.Logger().Warn("Failed to get openapi schema. It might be not supported in the current version of kubernetes. Openapi is supported since kubernetes 1.4", "err", err)
+		}
 
 		c.services[kCfg.CurrentContext] = initServices(kClient)
 	}
