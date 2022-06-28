@@ -25,11 +25,11 @@ Example of context selection:
 ```yml title="cloudquery.yml"
 providers:
   - name: k8s
-    configuration:
+   #  configuration:
       # Optional. Set contexts that you want to fetch. If it is not given then all contexts from config are iterated over.
-      contexts:
-        - "<YOUR_CONTEXT_NAME1>"
-        - "<YOUR_CONTEXT_NAME2>"
+      # contexts:
+        # - "<YOUR_CONTEXT_NAME1>"
+        # - "<YOUR_CONTEXT_NAME2>"
     resources:
       - "*"
 ```
