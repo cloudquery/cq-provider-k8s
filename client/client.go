@@ -110,7 +110,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		if err != nil {
 			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", ctxName, err), diag.INTERNAL)
 		}
-		c.paths, err = getApisMap(kClient)
+		c.paths, err = getAPIsMap(kClient)
 		if err != nil {
 			c.Logger().Warn("Failed to get OpenAPI schema. It might be not supported in the current version of Kubernetes. OpenAPI has been supported since Kubernetes 1.4", "err", err)
 		}
