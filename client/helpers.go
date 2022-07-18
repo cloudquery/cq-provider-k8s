@@ -49,7 +49,7 @@ func ApiFilterContextMultiplex(path string) func(meta schema.ClientMeta) []schem
 			}
 		}
 
-		clients := make([]schema.ClientMeta, 0)
+		clients := make([]schema.ClientMeta, 0, len(client.contexts))
 		for _, ctxName := range client.contexts {
 			clients = append(clients, client.WithContext(ctxName))
 		}
