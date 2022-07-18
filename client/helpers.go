@@ -44,7 +44,7 @@ func ApiFilterContextMultiplex(path string) func(meta schema.ClientMeta) []schem
 		// in kubernetes version below 1.4 paths is nil
 		if client.paths != nil {
 			if _, ok := client.paths[path]; !ok {
-				client.Logger().Warn("The resource is not supported but current version of k8s", "path", path)
+				client.Logger().Warn("The resource is not supported by current version of k8s", "path", path)
 				return []schema.ClientMeta{}
 			}
 		}
