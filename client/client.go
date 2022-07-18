@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -20,7 +19,6 @@ type Client struct {
 	kConfig  api.Config
 	config   *Config
 	contexts []string
-	paths    map[string]struct{}
 
 	Context string
 }
@@ -89,6 +87,11 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 			contexts = append(contexts, cName)
 		}
 	}
+
+	if len(contexts) == 0 {
+		return nil, diag.FromError(fmt.Errorf("could not find any context"), diag.USER, diag.WithDetails("Try to add context, https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-context-and-configuration"))
+	}
+
 	c := Client{
 		Log:      logger,
 		services: make(map[string]Services),
@@ -101,17 +104,15 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 
 	for _, ctxName := range contexts {
 		logger.Info("creating k8s client for context", "context", ctxName)
-		kClient, err := buildKubeClient(kCfg, kCfg.CurrentContext)
+		kClient, err := buildKubeClient(kCfg, ctxName)
 		if err != nil {
-			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", kCfg.CurrentContext, err), diag.INTERNAL)
+			return nil, diag.FromError(fmt.Errorf("failed to build k8s client for context %q: %w", ctxName, err), diag.INTERNAL)
 		}
-
 		c.paths, err = getApisMap(kClient)
 		if err != nil {
 			c.Logger().Warn("Failed to get openapi schema. It might be not supported in the current version of kubernetes. Openapi is supported since kubernetes 1.4", "err", err)
 		}
-
-		c.services[kCfg.CurrentContext] = initServices(kClient)
+		c.services[ctxName] = initServices(kClient)
 	}
 
 	return &c, nil
