@@ -136,7 +136,7 @@ func buildKubeClient(kubeConfig api.Config, ctx string) (*kubernetes.Clientset, 
 	return kubernetes.NewForConfig(restConfig)
 }
 
-func getApisMap(client *kubernetes.Clientset) (map[string]struct{}, error) {
+func getAPIsMap(client *kubernetes.Clientset) (map[string]struct{}, error) {
 	doc, err := client.OpenAPISchema()
 	if err != nil {
 		return nil, err
