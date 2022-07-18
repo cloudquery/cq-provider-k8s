@@ -10,7 +10,7 @@ require (
 	github.com/thoas/go-funk v0.9.2
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
-	k8s.io/client-go v0.24.3
+	k8s.io/client-go/v12 v12.0.0
 )
 
 require (
