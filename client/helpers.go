@@ -36,8 +36,8 @@ func ContextMultiplex(meta schema.ClientMeta) []schema.ClientMeta {
 	return clients
 }
 
-// ApiFilterContextMultiplex returns a list of clients for each context from the cq config
-func ApiFilterContextMultiplex(path string) func(meta schema.ClientMeta) []schema.ClientMeta {
+// APIFilterContextMultiplex returns a list of clients for each context from the cq config
+func APIFilterContextMultiplex(path string) func(meta schema.ClientMeta) []schema.ClientMeta {
 	return func(meta schema.ClientMeta) []schema.ClientMeta {
 		client := meta.(*Client)
 
