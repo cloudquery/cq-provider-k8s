@@ -112,7 +112,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 		}
 		c.paths, err = getApisMap(kClient)
 		if err != nil {
-			c.Logger().Warn("Failed to get openapi schema. It might be not supported in the current version of kubernetes. Openapi is supported since kubernetes 1.4", "err", err)
+			c.Logger().Warn("Failed to get OpenAPI schema. It might be not supported in the current version of Kubernetes. OpenAPI has been supported since Kubernetes 1.4", "err", err)
 		}
 		c.services[ctxName] = initServices(kClient)
 	}
