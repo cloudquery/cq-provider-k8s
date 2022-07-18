@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -19,6 +20,7 @@ type Client struct {
 	kConfig  api.Config
 	config   *Config
 	contexts []string
+	paths    map[string]struct{}
 
 	Context string
 }
