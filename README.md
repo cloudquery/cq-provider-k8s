@@ -1,3 +1,5 @@
+This moved to cloudquery monorepo https://github.com/cloudquery/cloudquery
+
 <p align="center">
 <a href="https://cloudquery.io">
 <img alt="cloudquery logo" width=75% src="https://github.com/cloudquery/cloudquery/raw/main/docs/images/logo.png" />
